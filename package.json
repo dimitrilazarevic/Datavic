@@ -3,9 +3,13 @@
 	"private": true,
 	"version": "0.0.1",
 	"type": "module",
+	"main": "electron/dist/main.cjs",
 	"scripts": {
 		"dev": "vite dev",
-		"build": "vite build",
+		"dev:electron": "vite build --config vite.config.electron.ts && NODE_ENV=development electron .",
+		"build": "vite build && vite build --config vite.config.electron.ts",
+		"build:electron": "vite build --config vite.config.electron.ts",
+		"release": "npm run build && electron-builder --publish always",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
@@ -51,10 +55,32 @@
 		"better-sqlite3": "^12.10.0"
 	},
 	"build": {
-      "publish": {
-        "provider": "github",
-        "owner": "dimitrilazarevic",
-        "repo": "datavic"
-      }
-    }
+		"appId": "com.datavic.app",
+		"productName": "Datavic",
+		"files": [
+			"build/**/*",
+			"electron/dist/**/*"
+		],
+		"extraResources": [
+			{
+				"from": "electron/appicon.png",
+				"to": "appicon.png"
+			}
+		],
+		"linux": {
+			"target": ["AppImage", "deb"],
+			"category": "Utility"
+		},
+		"win": {
+			"target": ["nsis"]
+		},
+		"mac": {
+			"target": ["dmg"]
+		},
+		"publish": {
+			"provider": "github",
+			"owner": "dimitrilazarevic",
+			"repo": "datavic"
+		}
+	}
 }
