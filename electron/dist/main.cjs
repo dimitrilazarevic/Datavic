@@ -30,7 +30,7 @@ var { autoUpdater } = electron_updater.default;
 var mainWindow = null;
 var tray = null;
 var isDev = process.env.NODE_ENV === "development";
-var iconPath = isDev ? path.default.join(__dirname, "..", "appicon.png") : path.default.join(process.resourcesPath, "appicon.png");
+var iconPath = isDev ? path.default.join(__dirname, ".", "appicon.png") : path.default.join(process.resourcesPath, "appicon.png");
 function createWindow() {
 	mainWindow = new electron.BrowserWindow({
 		width: 1200,

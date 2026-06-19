@@ -9,7 +9,7 @@ let tray: Tray | null = null;
 const isDev = process.env.NODE_ENV === 'development';
 
 const iconPath = isDev
-	? path.join(__dirname, '..', 'appicon.png')
+	? path.join(__dirname, '.', 'appicon.png')
 	: path.join(process.resourcesPath, 'appicon.png');
 
 function createWindow() {

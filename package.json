@@ -1,5 +1,7 @@
 {
 	"name": "datavic",
+	"author": "Dimitri Lazarevic - ETIC",
+	"description": "Une app de visualisation de données pour l'Oreal",
 	"private": true,
 	"version": "0.0.1",
 	"type": "module",
