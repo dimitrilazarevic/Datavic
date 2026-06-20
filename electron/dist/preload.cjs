@@ -9,6 +9,12 @@ electron.contextBridge.exposeInMainWorld("electronAPI", {
 	},
 	onUpdateDownloaded: (callback) => {
 		electron.ipcRenderer.on("update-downloaded", callback);
+	},
+	db: {
+		getTasks: () => electron.ipcRenderer.invoke("db:get-tasks"),
+		addTask: (data) => electron.ipcRenderer.invoke("db:add-task", data),
+		updateTask: (data) => electron.ipcRenderer.invoke("db:update-task", data),
+		deleteTask: (id) => electron.ipcRenderer.invoke("db:delete-task", id)
 	}
 });
 //#endregion

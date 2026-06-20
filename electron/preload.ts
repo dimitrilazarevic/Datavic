@@ -10,5 +10,12 @@ contextBridge.exposeInMainWorld('electronAPI', {
 	},
 	onUpdateDownloaded: (callback: () => void) => {
 		ipcRenderer.on('update-downloaded', callback);
+	},
+
+	db: {
+		getTasks: () => ipcRenderer.invoke('db:get-tasks'),
+		addTask: (data: { title: string; priority?: number }) => ipcRenderer.invoke('db:add-task', data),
+		updateTask: (data: { id: string; title?: string; priority?: number }) => ipcRenderer.invoke('db:update-task', data),
+		deleteTask: (id: string) => ipcRenderer.invoke('db:delete-task', id)
 	}
 });

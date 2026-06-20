@@ -14,7 +14,7 @@ export default defineConfig({
 				format: 'cjs',
 				entryFileNames: '[name].cjs'
 			},
-			external: ['electron', 'electron-updater', 'better-sqlite3']
+			external: ['electron', 'electron-updater', 'better-sqlite3', 'drizzle-orm', /^drizzle-orm\//]
 		}
 	}
 });
