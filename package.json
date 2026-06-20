@@ -3,7 +3,7 @@
 	"author": "Dimitri Lazarevic - ETIC INSA",
 	"description": "Une app de visualisation de données pour l'Oreal",
 	"private": true,
-	"version": "0.0.21",
+	"version": "0.0.22",
 	"type": "module",
 	"main": "electron/dist/main.cjs",
 	"scripts": {
@@ -85,6 +85,9 @@
 				"nsis"
 			],
 			"icon": "electron/appicon.ico"
+		},
+		"nsis": {
+			"differentialPackage": false
 		},
 		"mac": {
 			"target": [
