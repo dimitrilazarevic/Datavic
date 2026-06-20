@@ -1,8 +1,7 @@
-import { app, BrowserWindow, Menu, Tray, ipcMain, nativeImage, protocol, net } from 'electron';
+import { app, BrowserWindow, Menu, Tray, ipcMain, nativeImage } from 'electron';
 import pkg from 'electron-updater';
 const { autoUpdater } = pkg;
 import path from 'path';
-import { pathToFileURL } from 'url';
 import { eq } from 'drizzle-orm';
 import { initDatabase, getDb } from './lib/db';
 import { task } from './lib/db/schema';
@@ -12,10 +11,6 @@ let mainWindow: BrowserWindow | null = null;
 let tray: Tray | null = null;
 
 const isDev = process.env.NODE_ENV === 'development';
-
-protocol.registerSchemesAsPrivileged([
-	{ scheme: 'app', privileges: { standard: true, secure: true, supportFetchAPI: true } }
-]);
 
 const iconPath = isDev
 	? path.join(__dirname, '.', 'appicon.png')
@@ -39,7 +34,9 @@ function createWindow() {
 		mainWindow.loadURL('http://localhost:5173');
 		mainWindow.webContents.openDevTools();
 	} else {
-		mainWindow.loadURL('app://./index.html');
+		const indexPath = path.join(__dirname, '../../build/index.html');
+		console.log('Loading index from:', indexPath);
+		mainWindow.loadFile(indexPath);
 	}
 
 	mainWindow.on('closed', () => {
@@ -94,7 +91,9 @@ function createTray() {
 function setupAutoUpdater() {
 	if (isDev) return;
 
-	autoUpdater.checkForUpdatesAndNotify();
+	autoUpdater.checkForUpdatesAndNotify().catch((err: Error) => {
+		console.warn('Auto-update check failed:', err.message);
+	});
 
 	autoUpdater.on('update-available', () => {
 		mainWindow?.webContents.send('update-available');
@@ -145,14 +144,6 @@ app.on('activate', () => {
 });
 
 app.whenReady().then(() => {
-	const buildDir = path.join(__dirname, '../../build');
-
-	protocol.handle('app', (request) => {
-		let filePath = new URL(request.url).pathname;
-		if (filePath === '/') filePath = '/index.html';
-		return net.fetch(pathToFileURL(path.join(buildDir, filePath)).toString());
-	});
-
 	const dbPath = path.join(app.getPath('userData'), 'datavic.db');
 	initDatabase(dbPath);
 
