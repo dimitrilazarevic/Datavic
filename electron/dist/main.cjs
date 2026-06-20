@@ -95,7 +95,7 @@ function createWindow() {
 	if (isDev) {
 		mainWindow.loadURL("http://localhost:5173");
 		mainWindow.webContents.openDevTools();
-	} else mainWindow.loadURL("app://./index.html");
+	} else mainWindow.loadURL("app://./");
 	mainWindow.on("closed", () => {
 		mainWindow = null;
 	});
