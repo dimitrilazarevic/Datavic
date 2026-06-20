@@ -11,6 +11,9 @@ export default defineConfig({
 					filename.split(/[/\\]/).includes('node_modules') ? undefined : true
 			},
 			adapter: adapter(),
+			paths: {
+				relative: true
+			},
 			typescript: {
 				config: (config) => ({
 					...config,
