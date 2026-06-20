@@ -61,8 +61,7 @@
 		"productName": "Datavic",
 		"files": [
 			"build/**/*",
-			"electron/dist/**/*",
-			"electron/lib/db/migrations/**/*"
+			"electron/dist/**/*"
 		],
 		"extraResources": [
 			{
@@ -70,8 +69,8 @@
 				"to": "appicon.png"
 			},
 			{
-				"from": "electron/lib/db/migrations/**",
-				"to": "migrations"
+				"from": "electron/lib/db/migrations/",
+				"to": "migrations/"
 			}
 		],
 		"linux": {
