@@ -6,13 +6,17 @@ import * as schema from './schema';
 
 let db: BetterSQLite3Database<typeof schema> | null = null;
 
+const isDev = process.env.NODE_ENV === 'development';
+
 export function initDatabase(dbPath: string) {
 	const client = new Database(dbPath);
 	client.pragma('journal_mode = WAL');
 
 	db = drizzle(client, { schema });
 
-	const migrationsFolder = path.join(__dirname, '..', 'lib', 'db', 'migrations');
+	const migrationsFolder = isDev
+		? path.join(__dirname, '..', 'lib', 'db', 'migrations')
+		: path.join(process.resourcesPath, 'migrations');
 	migrate(db, { migrationsFolder });
 
 	return db;

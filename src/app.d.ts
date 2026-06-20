@@ -1,13 +1,9 @@
 // See https://svelte.dev/docs/kit/types#app.d.ts
 // for information about these interfaces
 
-declare global {
-	interface Task {
-		id: string;
-		title: string;
-		priority: number;
-	}
+import type { Task, TaskInsert } from '../electron/lib/db/types';
 
+declare global {
 	interface ElectronAPI {
 		getVersion: () => Promise<string>;
 		getPlatform: () => Promise<string>;
@@ -16,8 +12,8 @@ declare global {
 		onUpdateDownloaded: (callback: () => void) => void;
 		db: {
 			getTasks: () => Promise<Task[]>;
-			addTask: (data: { title: string; priority?: number }) => Promise<Task>;
-			updateTask: (data: { id: string; title?: string; priority?: number }) => Promise<Task>;
+			addTask: (data: TaskInsert) => Promise<Task>;
+			updateTask: (data: { id: string } & Partial<TaskInsert>) => Promise<Task>;
 			deleteTask: (id: string) => Promise<Task>;
 		};
 	}

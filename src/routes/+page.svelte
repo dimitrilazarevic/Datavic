@@ -1,4 +1,6 @@
 <script lang="ts">
+	import type { Task } from '../../electron/lib/db/types';
+
 	let tasks = $state<Task[]>([]);
 	let newTitle = $state('');
 	let newPriority = $state(1);

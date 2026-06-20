@@ -3,7 +3,7 @@
 	"author": "Dimitri Lazarevic - ETIC",
 	"description": "Une app de visualisation de données pour l'Oreal",
 	"private": true,
-	"version": "0.0.10",
+	"version": "0.0.11",
 	"type": "module",
 	"main": "electron/dist/main.cjs",
 	"scripts": {
@@ -67,6 +67,10 @@
 			{
 				"from": "electron/appicon.png",
 				"to": "appicon.png"
+			},
+			{
+				"from": "electron/lib/db/migrations",
+				"to": "migrations"
 			}
 		],
 		"linux": {

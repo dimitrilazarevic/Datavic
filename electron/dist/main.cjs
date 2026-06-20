@@ -51,11 +51,12 @@ var task = (0, drizzle_orm_sqlite_core.sqliteTable)("task", {
 //#endregion
 //#region electron/lib/db/index.ts
 var db = null;
+var isDev$1 = process.env.NODE_ENV === "development";
 function initDatabase(dbPath) {
 	const client = new better_sqlite3.default(dbPath);
 	client.pragma("journal_mode = WAL");
 	db = (0, drizzle_orm_better_sqlite3.drizzle)(client, { schema: schema_exports });
-	const migrationsFolder = path.default.join(__dirname, "..", "lib", "db", "migrations");
+	const migrationsFolder = isDev$1 ? path.default.join(__dirname, "..", "lib", "db", "migrations") : path.default.join(process.resourcesPath, "migrations");
 	(0, drizzle_orm_better_sqlite3_migrator.migrate)(db, { migrationsFolder });
 	return db;
 }
