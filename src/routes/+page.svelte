@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Task } from '../../electron/lib/db/types';
+	import type { Task } from '../../electron/lib/types';
 
 	let tasks = $state<Task[]>([]);
 	let newTitle = $state('');

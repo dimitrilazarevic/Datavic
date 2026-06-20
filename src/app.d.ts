@@ -1,7 +1,7 @@
 // See https://svelte.dev/docs/kit/types#app.d.ts
 // for information about these interfaces
 
-import type { Task, TaskInsert } from '../electron/lib/db/types';
+import type { Task, TaskInsert } from '../electron/lib/types';
 
 declare global {
 	interface ElectronAPI {

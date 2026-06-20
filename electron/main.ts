@@ -6,6 +6,7 @@ import { pathToFileURL } from 'url';
 import { eq } from 'drizzle-orm';
 import { initDatabase, getDb } from './lib/db';
 import { task } from './lib/db/schema';
+import type { Task } from './lib/types';
 
 let mainWindow: BrowserWindow | null = null;
 let tray: Tray | null = null;
@@ -117,20 +118,20 @@ function registerIpcHandlers() {
 		autoUpdater.quitAndInstall();
 	});
 
-	ipcMain.handle('db:get-tasks', () => {
+	ipcMain.handle('db:get-tasks', () : Task[] => {
 		return getDb().select().from(task).all();
 	});
 
-	ipcMain.handle('db:add-task', (_event, data: { title: string; priority?: number }) => {
+	ipcMain.handle('db:add-task', (_event, data: { title: string; priority?: number }) : Task => {
 		return getDb().insert(task).values(data).returning().get();
 	});
 
-	ipcMain.handle('db:update-task', (_event, data: { id: string; title?: string; priority?: number }) => {
+	ipcMain.handle('db:update-task', (_event, data: { id: string; title?: string; priority?: number }) : Task => {
 		const { id, ...values } = data;
 		return getDb().update(task).set(values).where(eq(task.id, id)).returning().get();
 	});
 
-	ipcMain.handle('db:delete-task', (_event, id: string) => {
+	ipcMain.handle('db:delete-task', (_event, id: string) : Task | undefined => {
 		return getDb().delete(task).where(eq(task.id, id)).returning().get();
 	});
 }
