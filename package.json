@@ -1,9 +1,9 @@
 {
 	"name": "datavic",
-	"author": "Dimitri Lazarevic - ETIC",
+	"author": "Dimitri Lazarevic - ETIC INSA",
 	"description": "Une app de visualisation de données pour l'Oreal",
 	"private": true,
-	"version": "0.0.20",
+	"version": "0.0.21",
 	"type": "module",
 	"main": "electron/dist/main.cjs",
 	"scripts": {
