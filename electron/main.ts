@@ -1,7 +1,8 @@
-import { app, BrowserWindow, Menu, Tray, ipcMain, nativeImage } from 'electron';
+import { app, BrowserWindow, Menu, Tray, ipcMain, nativeImage, protocol } from 'electron';
 import pkg from 'electron-updater';
 const { autoUpdater } = pkg;
 import path from 'path';
+import fs from 'fs';
 import { eq } from 'drizzle-orm';
 import { initDatabase, getDb } from './lib/db';
 import { task } from './lib/db/schema';
@@ -11,6 +12,23 @@ let mainWindow: BrowserWindow | null = null;
 let tray: Tray | null = null;
 
 const isDev = process.env.NODE_ENV === 'development';
+
+protocol.registerSchemesAsPrivileged([
+	{ scheme: 'app', privileges: { standard: true, secure: true, supportFetchAPI: true } }
+]);
+
+const mimeTypes: Record<string, string> = {
+	'.html': 'text/html',
+	'.js': 'application/javascript',
+	'.css': 'text/css',
+	'.json': 'application/json',
+	'.png': 'image/png',
+	'.jpg': 'image/jpeg',
+	'.svg': 'image/svg+xml',
+	'.ico': 'image/x-icon',
+	'.woff': 'font/woff',
+	'.woff2': 'font/woff2',
+};
 
 const iconPath = isDev
 	? path.join(__dirname, '.', 'appicon.png')
@@ -34,9 +52,7 @@ function createWindow() {
 		mainWindow.loadURL('http://localhost:5173');
 		mainWindow.webContents.openDevTools();
 	} else {
-		const indexPath = path.join(__dirname, '../../build/index.html');
-		console.log('Loading index from:', indexPath);
-		mainWindow.loadFile(indexPath);
+		mainWindow.loadURL('app://./index.html');
 	}
 
 	mainWindow.on('closed', () => {
@@ -144,6 +160,19 @@ app.on('activate', () => {
 });
 
 app.whenReady().then(() => {
+	const buildDir = path.join(__dirname, '../../build');
+
+	protocol.handle('app', (request) => {
+		let filePath = new URL(request.url).pathname;
+		if (filePath === '/') filePath = '/index.html';
+		const fullPath = path.join(buildDir, decodeURIComponent(filePath));
+		const ext = path.extname(fullPath);
+		const data = fs.readFileSync(fullPath);
+		return new Response(data, {
+			headers: { 'Content-Type': mimeTypes[ext] || 'application/octet-stream' }
+		});
+	});
+
 	const dbPath = path.join(app.getPath('userData'), 'datavic.db');
 	initDatabase(dbPath);
 
