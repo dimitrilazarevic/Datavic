@@ -24,7 +24,10 @@ jobs:
       - name: Build SvelteKit + Electron
         run: npm run build
 
-      - name: Package & publish
-        run: npx electron-builder --publish always
+      - name: Package
+        run: npx electron-builder --publish never
+
+      - name: Create release and upload assets
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create ${{ github.ref_name }} dist/*.exe dist/*.yml dist/*.blockmap --title "${{ github.ref_name }}" --generate-notes
