@@ -1,20 +1,45 @@
 // See https://svelte.dev/docs/kit/types#app.d.ts
 // for information about these interfaces
 
-import type { Task, TaskInsert } from '../electron/lib/types';
+import type {
+	BottleType, BottleTypeInsert,
+	Brand, BrandInsert,
+	Overbrand, OverbrandInsert,
+	Zone, ZoneInsert,
+	MaterialFamily, MaterialFamilyInsert,
+	Supplier, SupplierInsert
+} from '../electron/lib/types';
+
+interface SimpleCrud<T, TInsert> {
+	getAll: () => Promise<T[]>;
+	create: (data: TInsert) => Promise<T>;
+	update: (id: number, data: Partial<TInsert>) => Promise<T>;
+	delete: (id: number) => Promise<T>;
+}
 
 declare global {
 	interface ElectronAPI {
 		getVersion: () => Promise<string>;
 		getPlatform: () => Promise<string>;
 		installUpdate: () => Promise<void>;
+		openPath: (path: string) => Promise<string>;
 		onUpdateAvailable: (callback: () => void) => void;
 		onUpdateDownloaded: (callback: () => void) => void;
+		config: {
+			getDbFolder: () => Promise<string | null>;
+			getDbPath: () => Promise<string>;
+			selectDbFolder: () => Promise<string | null>;
+			resetDbFolder: () => Promise<void>;
+			backupDb: () => Promise<string | null>;
+			restoreDb: () => Promise<boolean>;
+		};
 		db: {
-			getTasks: () => Promise<Task[]>;
-			addTask: (data: TaskInsert) => Promise<Task>;
-			updateTask: (data: { id: string } & Partial<TaskInsert>) => Promise<Task>;
-			deleteTask: (id: string) => Promise<Task>;
+			bottleType: SimpleCrud<BottleType, BottleTypeInsert>;
+			brand: SimpleCrud<Brand, BrandInsert>;
+			overbrand: SimpleCrud<Overbrand, OverbrandInsert>;
+			zone: SimpleCrud<Zone, ZoneInsert>;
+			materialFamily: SimpleCrud<MaterialFamily, MaterialFamilyInsert>;
+			supplier: SimpleCrud<Supplier, SupplierInsert>;
 		};
 	}
 

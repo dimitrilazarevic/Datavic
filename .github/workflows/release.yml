@@ -27,6 +27,14 @@ jobs:
       - name: Package
         run: npx electron-builder --publish never
 
+      - name: Rename artifacts
+        run: |
+          Get-ChildItem dist -File | Where-Object { $_.Name -match ' ' } | ForEach-Object {
+            $newName = $_.Name -replace ' ', '-'
+            Rename-Item $_.FullName $newName
+          }
+        shell: pwsh
+
       - name: Create release and upload assets
         env:
           GH_TOKEN: ${{ github.token }}

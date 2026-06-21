@@ -1,12 +1,11 @@
-import { app, BrowserWindow, Menu, Tray, ipcMain, nativeImage, protocol } from 'electron';
+import { app, BrowserWindow, Menu, Tray, nativeImage, protocol } from 'electron';
 import pkg from 'electron-updater';
 const { autoUpdater } = pkg;
 import path from 'path';
 import fs from 'fs';
-import { eq } from 'drizzle-orm';
-import { initDatabase, getDb } from './lib/db';
-import { task } from './lib/db/schema';
-import type { Task } from './lib/types';
+import { initDatabase } from './lib/db';
+import { getDbPath } from './lib/config';
+import { registerIpcHandlers } from './ipc';
 
 let mainWindow: BrowserWindow | null = null;
 let tray: Tray | null = null;
@@ -121,36 +120,6 @@ function setupAutoUpdater() {
 	});
 }
 
-function registerIpcHandlers() {
-	ipcMain.handle('get-version', () => {
-		return app.getVersion();
-	});
-
-	ipcMain.handle('get-platform', () => {
-		return process.platform;
-	});
-
-	ipcMain.handle('install-update', () => {
-		autoUpdater.quitAndInstall();
-	});
-
-	ipcMain.handle('db:get-tasks', () : Task[] => {
-		return getDb().select().from(task).all();
-	});
-
-	ipcMain.handle('db:add-task', (_event, data: { title: string; priority?: number }) : Task => {
-		return getDb().insert(task).values(data).returning().get();
-	});
-
-	ipcMain.handle('db:update-task', (_event, data: { id: string; title?: string; priority?: number }) : Task => {
-		const { id, ...values } = data;
-		return getDb().update(task).set(values).where(eq(task.id, id)).returning().get();
-	});
-
-	ipcMain.handle('db:delete-task', (_event, id: string) : Task | undefined => {
-		return getDb().delete(task).where(eq(task.id, id)).returning().get();
-	});
-}
 
 app.on('window-all-closed', () => {
 	if (process.platform !== 'darwin') app.quit();
@@ -174,8 +143,7 @@ app.whenReady().then(() => {
 		});
 	});
 
-	const dbPath = path.join(app.getPath('userData'), 'datavic.db');
-	initDatabase(dbPath);
+	initDatabase(getDbPath());
 
 	createWindow();
 	createTray();

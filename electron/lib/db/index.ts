@@ -5,12 +5,14 @@ import path from 'path';
 import * as schema from './schema';
 
 let db: BetterSQLite3Database<typeof schema> | null = null;
+let client: Database.Database | null = null;
 
 const isDev = process.env.NODE_ENV === 'development';
 
 export function initDatabase(dbPath: string) {
-	const client = new Database(dbPath);
+	client = new Database(dbPath);
 	client.pragma('journal_mode = WAL');
+	client.pragma('foreign_keys = ON');
 
 	db = drizzle(client, { schema });
 
@@ -25,4 +27,9 @@ export function initDatabase(dbPath: string) {
 export function getDb() {
 	if (!db) throw new Error('Database not initialized');
 	return db;
+}
+
+export function getClient() {
+	if (!client) throw new Error('Database not initialized');
+	return client;
 }

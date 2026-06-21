@@ -1,3 +1,13 @@
+# Commandes utiles si besoin
+
+## Supprimer la DB
+
+rm ~/.config/datavic/datavic.db
+
+## Problèmes de build electron (version de node..)
+
+npx @electron/rebuild -m /home/dimitri/Desktop/Programmation/Datavic -o better-sqlite3 2>&1
+
 # sv
 
 Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
