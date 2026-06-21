@@ -5,13 +5,14 @@
 		onclick: () => void;
 		variant?: 'primary' | 'secondary' | 'danger';
 		label: string;
+		disabled?: boolean;
 		children: Snippet;
 	}
 
-	let { onclick, variant = 'secondary', label, children }: Props = $props();
+	let { onclick, variant = 'secondary', label, disabled = false, children }: Props = $props();
 </script>
 
-<button class="icon-btn {variant}" {onclick} aria-label={label} title={label}>
+<button class="icon-btn {variant}" {onclick} {disabled} aria-label={label} title={label}>
 	{@render children()}
 </button>
 
@@ -47,5 +48,14 @@
 
 	.icon-btn.primary:hover {
 		background: var(--color-primary-light);
+	}
+
+	.icon-btn:disabled {
+		opacity: 0.3;
+		cursor: not-allowed;
+	}
+
+	.icon-btn:disabled:hover {
+		background: transparent;
 	}
 </style>

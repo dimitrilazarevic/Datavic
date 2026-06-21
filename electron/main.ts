@@ -26,7 +26,7 @@ const mimeTypes: Record<string, string> = {
 	'.svg': 'image/svg+xml',
 	'.ico': 'image/x-icon',
 	'.woff': 'font/woff',
-	'.woff2': 'font/woff2',
+	'.woff2': 'font/woff2'
 };
 
 const iconPath = isDev
@@ -52,7 +52,6 @@ function createWindow() {
 		mainWindow.webContents.openDevTools();
 	} else {
 		mainWindow.loadURL('app://./');
-
 	}
 
 	mainWindow.on('closed', () => {
@@ -119,7 +118,6 @@ function setupAutoUpdater() {
 		mainWindow?.webContents.send('update-downloaded');
 	});
 }
-
 
 app.on('window-all-closed', () => {
 	if (process.platform !== 'darwin') app.quit();

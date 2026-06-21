@@ -1,0 +1,770 @@
+{
+	"version": "6",
+	"dialect": "sqlite",
+	"id": "1b63c730-9e72-4496-95c0-6a29c3d9204d",
+	"prevId": "f1b7a258-efad-4db3-b01c-e89f31f5be4a",
+	"tables": {
+		"bottle": {
+			"name": "bottle",
+			"columns": {
+				"bottle_id": {
+					"name": "bottle_id",
+					"type": "integer",
+					"primaryKey": true,
+					"notNull": true,
+					"autoincrement": true
+				},
+				"folder_name": {
+					"name": "folder_name",
+					"type": "text(255)",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"image_extension": {
+					"name": "image_extension",
+					"type": "text(10)",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"claim_ml": {
+					"name": "claim_ml",
+					"type": "real",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"mass_g": {
+					"name": "mass_g",
+					"type": "text(20)",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"version": {
+					"name": "version",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"status": {
+					"name": "status",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"pdm_number": {
+					"name": "pdm_number",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"overflow_capacity_ml": {
+					"name": "overflow_capacity_ml",
+					"type": "real",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"surface_cm2": {
+					"name": "surface_cm2",
+					"type": "real",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"thickness_mm": {
+					"name": "thickness_mm",
+					"type": "real",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"mass_loss_exp": {
+					"name": "mass_loss_exp",
+					"type": "real",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"last_modified": {
+					"name": "last_modified",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"bottle_type_id": {
+					"name": "bottle_type_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"brand_id": {
+					"name": "brand_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"material_id": {
+					"name": "material_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"overbrand_id": {
+					"name": "overbrand_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"zone_id": {
+					"name": "zone_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				}
+			},
+			"indexes": {
+				"bottle_folder_name_unique": {
+					"name": "bottle_folder_name_unique",
+					"columns": ["folder_name"],
+					"isUnique": true
+				}
+			},
+			"foreignKeys": {
+				"bottle_bottle_type_id_bottle_type_bottle_type_id_fk": {
+					"name": "bottle_bottle_type_id_bottle_type_bottle_type_id_fk",
+					"tableFrom": "bottle",
+					"tableTo": "bottle_type",
+					"columnsFrom": ["bottle_type_id"],
+					"columnsTo": ["bottle_type_id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				},
+				"bottle_brand_id_brand_brand_id_fk": {
+					"name": "bottle_brand_id_brand_brand_id_fk",
+					"tableFrom": "bottle",
+					"tableTo": "brand",
+					"columnsFrom": ["brand_id"],
+					"columnsTo": ["brand_id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				},
+				"bottle_material_id_material_material_id_fk": {
+					"name": "bottle_material_id_material_material_id_fk",
+					"tableFrom": "bottle",
+					"tableTo": "material",
+					"columnsFrom": ["material_id"],
+					"columnsTo": ["material_id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				},
+				"bottle_overbrand_id_overbrand_overbrand_id_fk": {
+					"name": "bottle_overbrand_id_overbrand_overbrand_id_fk",
+					"tableFrom": "bottle",
+					"tableTo": "overbrand",
+					"columnsFrom": ["overbrand_id"],
+					"columnsTo": ["overbrand_id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				},
+				"bottle_zone_id_zone_zone_id_fk": {
+					"name": "bottle_zone_id_zone_zone_id_fk",
+					"tableFrom": "bottle",
+					"tableTo": "zone",
+					"columnsFrom": ["zone_id"],
+					"columnsTo": ["zone_id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"checkConstraints": {}
+		},
+		"bottle_analysis": {
+			"name": "bottle_analysis",
+			"columns": {
+				"bottle_analysis_id": {
+					"name": "bottle_analysis_id",
+					"type": "integer",
+					"primaryKey": true,
+					"notNull": true,
+					"autoincrement": true
+				},
+				"test_type": {
+					"name": "test_type",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"thickness_type": {
+					"name": "thickness_type",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"bottle_analysis_key": {
+					"name": "bottle_analysis_key",
+					"type": "text(40)",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"file_name": {
+					"name": "file_name",
+					"type": "text(255)",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"x_coordinates": {
+					"name": "x_coordinates",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"y_coordinates": {
+					"name": "y_coordinates",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"bottle_id": {
+					"name": "bottle_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"file_content_text": {
+					"name": "file_content_text",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"bottle_analysis_bottle_id_bottle_bottle_id_fk": {
+					"name": "bottle_analysis_bottle_id_bottle_bottle_id_fk",
+					"tableFrom": "bottle_analysis",
+					"tableTo": "bottle",
+					"columnsFrom": ["bottle_id"],
+					"columnsTo": ["bottle_id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"checkConstraints": {}
+		},
+		"bottle_type": {
+			"name": "bottle_type",
+			"columns": {
+				"bottle_type_id": {
+					"name": "bottle_type_id",
+					"type": "integer",
+					"primaryKey": true,
+					"notNull": true,
+					"autoincrement": true
+				},
+				"bottle_type_name": {
+					"name": "bottle_type_name",
+					"type": "text(100)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"bottle_type_constant": {
+					"name": "bottle_type_constant",
+					"type": "real",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				}
+			},
+			"indexes": {
+				"bottle_type_bottle_type_name_unique": {
+					"name": "bottle_type_bottle_type_name_unique",
+					"columns": ["bottle_type_name"],
+					"isUnique": true
+				}
+			},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"checkConstraints": {}
+		},
+		"brand": {
+			"name": "brand",
+			"columns": {
+				"brand_id": {
+					"name": "brand_id",
+					"type": "integer",
+					"primaryKey": true,
+					"notNull": true,
+					"autoincrement": true
+				},
+				"brand_name": {
+					"name": "brand_name",
+					"type": "text(100)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				}
+			},
+			"indexes": {
+				"brand_brand_name_unique": {
+					"name": "brand_brand_name_unique",
+					"columns": ["brand_name"],
+					"isUnique": true
+				}
+			},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"checkConstraints": {}
+		},
+		"material": {
+			"name": "material",
+			"columns": {
+				"material_id": {
+					"name": "material_id",
+					"type": "integer",
+					"primaryKey": true,
+					"notNull": true,
+					"autoincrement": true
+				},
+				"folder_name": {
+					"name": "folder_name",
+					"type": "text(255)",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"image_extension": {
+					"name": "image_extension",
+					"type": "text(10)",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"temperature_c": {
+					"name": "temperature_c",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"production_year": {
+					"name": "production_year",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"avg_elastic_modulus": {
+					"name": "avg_elastic_modulus",
+					"type": "real",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"avg_elastic_limit": {
+					"name": "avg_elastic_limit",
+					"type": "real",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"longi_avg_elastic_modulus": {
+					"name": "longi_avg_elastic_modulus",
+					"type": "real",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"longi_avg_elastic_limit": {
+					"name": "longi_avg_elastic_limit",
+					"type": "real",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"rad_avg_elastic_modulus": {
+					"name": "rad_avg_elastic_modulus",
+					"type": "real",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"rad_avg_elastic_limit": {
+					"name": "rad_avg_elastic_limit",
+					"type": "real",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"syne_abaqus_elastic_modulus": {
+					"name": "syne_abaqus_elastic_modulus",
+					"type": "real",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"syne_abaqus_elastic_limit": {
+					"name": "syne_abaqus_elastic_limit",
+					"type": "real",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"last_modified": {
+					"name": "last_modified",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"ref1": {
+					"name": "ref1",
+					"type": "text(100)",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"pct1": {
+					"name": "pct1",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false,
+					"default": 100
+				},
+				"ref2": {
+					"name": "ref2",
+					"type": "text(100)",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"pct2": {
+					"name": "pct2",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"material_family_id": {
+					"name": "material_family_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"supplier_id_1": {
+					"name": "supplier_id_1",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"supplier_id_2": {
+					"name": "supplier_id_2",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				}
+			},
+			"indexes": {
+				"material_folder_name_unique": {
+					"name": "material_folder_name_unique",
+					"columns": ["folder_name"],
+					"isUnique": true
+				}
+			},
+			"foreignKeys": {
+				"material_material_family_id_material_family_material_family_id_fk": {
+					"name": "material_material_family_id_material_family_material_family_id_fk",
+					"tableFrom": "material",
+					"tableTo": "material_family",
+					"columnsFrom": ["material_family_id"],
+					"columnsTo": ["material_family_id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				},
+				"material_supplier_id_1_supplier_supplier_id_fk": {
+					"name": "material_supplier_id_1_supplier_supplier_id_fk",
+					"tableFrom": "material",
+					"tableTo": "supplier",
+					"columnsFrom": ["supplier_id_1"],
+					"columnsTo": ["supplier_id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				},
+				"material_supplier_id_2_supplier_supplier_id_fk": {
+					"name": "material_supplier_id_2_supplier_supplier_id_fk",
+					"tableFrom": "material",
+					"tableTo": "supplier",
+					"columnsFrom": ["supplier_id_2"],
+					"columnsTo": ["supplier_id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"checkConstraints": {
+				"pct_sum_100": {
+					"name": "pct_sum_100",
+					"value": "(COALESCE(\"material\".\"pct1\", 0) + COALESCE(\"material\".\"pct2\", 0)) = 100"
+				}
+			}
+		},
+		"material_analysis": {
+			"name": "material_analysis",
+			"columns": {
+				"material_analysis_id": {
+					"name": "material_analysis_id",
+					"type": "integer",
+					"primaryKey": true,
+					"notNull": true,
+					"autoincrement": true
+				},
+				"test_type": {
+					"name": "test_type",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"test_direction": {
+					"name": "test_direction",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"material_analysis_key": {
+					"name": "material_analysis_key",
+					"type": "text(40)",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"file_name": {
+					"name": "file_name",
+					"type": "text(255)",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"x_coordinates": {
+					"name": "x_coordinates",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"y_coordinates": {
+					"name": "y_coordinates",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"material_id": {
+					"name": "material_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"file_content_text": {
+					"name": "file_content_text",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"material_analysis_material_id_material_material_id_fk": {
+					"name": "material_analysis_material_id_material_material_id_fk",
+					"tableFrom": "material_analysis",
+					"tableTo": "material",
+					"columnsFrom": ["material_id"],
+					"columnsTo": ["material_id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"checkConstraints": {}
+		},
+		"material_family": {
+			"name": "material_family",
+			"columns": {
+				"material_family_id": {
+					"name": "material_family_id",
+					"type": "integer",
+					"primaryKey": true,
+					"notNull": true,
+					"autoincrement": true
+				},
+				"material_family_name": {
+					"name": "material_family_name",
+					"type": "text(100)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				}
+			},
+			"indexes": {
+				"material_family_material_family_name_unique": {
+					"name": "material_family_material_family_name_unique",
+					"columns": ["material_family_name"],
+					"isUnique": true
+				}
+			},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"checkConstraints": {}
+		},
+		"overbrand": {
+			"name": "overbrand",
+			"columns": {
+				"overbrand_id": {
+					"name": "overbrand_id",
+					"type": "integer",
+					"primaryKey": true,
+					"notNull": true,
+					"autoincrement": true
+				},
+				"overbrand_name": {
+					"name": "overbrand_name",
+					"type": "text(100)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				}
+			},
+			"indexes": {
+				"overbrand_overbrand_name_unique": {
+					"name": "overbrand_overbrand_name_unique",
+					"columns": ["overbrand_name"],
+					"isUnique": true
+				}
+			},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"checkConstraints": {}
+		},
+		"supplier": {
+			"name": "supplier",
+			"columns": {
+				"supplier_id": {
+					"name": "supplier_id",
+					"type": "integer",
+					"primaryKey": true,
+					"notNull": true,
+					"autoincrement": true
+				},
+				"supplier_name": {
+					"name": "supplier_name",
+					"type": "text(100)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				}
+			},
+			"indexes": {
+				"supplier_supplier_name_unique": {
+					"name": "supplier_supplier_name_unique",
+					"columns": ["supplier_name"],
+					"isUnique": true
+				}
+			},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"checkConstraints": {}
+		},
+		"zone": {
+			"name": "zone",
+			"columns": {
+				"zone_id": {
+					"name": "zone_id",
+					"type": "integer",
+					"primaryKey": true,
+					"notNull": true,
+					"autoincrement": true
+				},
+				"zone_name": {
+					"name": "zone_name",
+					"type": "text(100)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				}
+			},
+			"indexes": {
+				"zone_zone_name_unique": {
+					"name": "zone_zone_name_unique",
+					"columns": ["zone_name"],
+					"isUnique": true
+				}
+			},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"checkConstraints": {}
+		}
+	},
+	"views": {},
+	"enums": {},
+	"_meta": {
+		"schemas": {},
+		"tables": {},
+		"columns": {}
+	},
+	"internal": {
+		"indexes": {}
+	}
+}

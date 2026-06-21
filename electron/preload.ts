@@ -19,7 +19,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
 		selectDbFolder: () => ipcRenderer.invoke('config:select-db-folder') as Promise<string | null>,
 		resetDbFolder: () => ipcRenderer.invoke('config:reset-db-folder') as Promise<void>,
 		backupDb: () => ipcRenderer.invoke('config:backup-db') as Promise<string | null>,
-		restoreDb: () => ipcRenderer.invoke('config:restore-db') as Promise<boolean>,
+		restoreDb: () => ipcRenderer.invoke('config:restore-db') as Promise<boolean>
 	},
 
 	db: {
@@ -50,7 +50,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
 		materialFamily: {
 			getAll: () => ipcRenderer.invoke('db:materialFamily:getAll'),
 			create: (data: object) => ipcRenderer.invoke('db:materialFamily:create', data),
-			update: (id: number, data: object) => ipcRenderer.invoke('db:materialFamily:update', id, data),
+			update: (id: number, data: object) =>
+				ipcRenderer.invoke('db:materialFamily:update', id, data),
 			delete: (id: number) => ipcRenderer.invoke('db:materialFamily:delete', id)
 		},
 		supplier: {
@@ -58,6 +59,32 @@ contextBridge.exposeInMainWorld('electronAPI', {
 			create: (data: object) => ipcRenderer.invoke('db:supplier:create', data),
 			update: (id: number, data: object) => ipcRenderer.invoke('db:supplier:update', id, data),
 			delete: (id: number) => ipcRenderer.invoke('db:supplier:delete', id)
+		},
+		bottle: {
+			getAll: () => ipcRenderer.invoke('db:bottle:getAll'),
+			getById: (id: number) => ipcRenderer.invoke('db:bottle:getById', id),
+			create: (data: object) => ipcRenderer.invoke('db:bottle:create', data),
+			update: (id: number, data: object) => ipcRenderer.invoke('db:bottle:update', id, data),
+			delete: (id: number) => ipcRenderer.invoke('db:bottle:delete', id),
+			deleteMany: (ids: number[]) => ipcRenderer.invoke('db:bottle:deleteMany', ids),
+			exportZip: (ids: number[]) => ipcRenderer.invoke('db:bottle:exportZip', ids),
+			uploadAnalysis: (id: number, data: object) =>
+				ipcRenderer.invoke('db:bottle:uploadAnalysis', id, data),
+			deleteAnalysis: (id: number, key: string) =>
+				ipcRenderer.invoke('db:bottle:deleteAnalysis', id, key)
+		},
+		material: {
+			getAll: () => ipcRenderer.invoke('db:material:getAll'),
+			getById: (id: number) => ipcRenderer.invoke('db:material:getById', id),
+			create: (data: object) => ipcRenderer.invoke('db:material:create', data),
+			update: (id: number, data: object) => ipcRenderer.invoke('db:material:update', id, data),
+			delete: (id: number) => ipcRenderer.invoke('db:material:delete', id),
+			deleteMany: (ids: number[]) => ipcRenderer.invoke('db:material:deleteMany', ids),
+			exportZip: (ids: number[]) => ipcRenderer.invoke('db:material:exportZip', ids),
+			uploadAnalysis: (id: number, data: object) =>
+				ipcRenderer.invoke('db:material:uploadAnalysis', id, data),
+			deleteAnalysis: (id: number, key: string) =>
+				ipcRenderer.invoke('db:material:deleteAnalysis', id, key)
 		}
 	}
 });

@@ -1,22 +1,12 @@
 import { sqliteTable, text, integer, real, check } from 'drizzle-orm/sqlite-core';
 import { sql } from 'drizzle-orm';
-
-// --- Enum types (validated at TypeScript level, stored as text in SQLite) ---
-
-export const BOTTLE_STATUS = ['DES', 'PIL', 'MOD'] as const;
-export type BottleStatus = (typeof BOTTLE_STATUS)[number];
-
-export const BOTTLE_ANALYSIS_TEST_TYPE = ['squeeze', 'sideload_io', 'sideload_ioi', 'topload'] as const;
-export type BottleAnalysisTestType = (typeof BOTTLE_ANALYSIS_TEST_TYPE)[number];
-
-export const BOTTLE_ANALYSIS_THICKNESS_TYPE = ['exp', 'lin', 'tom'] as const;
-export type BottleAnalysisThicknessType = (typeof BOTTLE_ANALYSIS_THICKNESS_TYPE)[number];
-
-export const MATERIAL_ANALYSIS_TEST_TYPE = ['ss', 'fd'] as const;
-export type MaterialAnalysisTestType = (typeof MATERIAL_ANALYSIS_TEST_TYPE)[number];
-
-export const MATERIAL_ANALYSIS_TEST_DIRECTION = ['avg', 'rad', 'long'] as const;
-export type MaterialAnalysisTestDirection = (typeof MATERIAL_ANALYSIS_TEST_DIRECTION)[number];
+import {
+	BOTTLE_STATUS,
+	BOTTLE_ANALYSIS_TEST_TYPE,
+	BOTTLE_ANALYSIS_THICKNESS_TYPE,
+	MATERIAL_ANALYSIS_TEST_TYPE,
+	MATERIAL_ANALYSIS_TEST_DIRECTION
+} from '../../../shared/enums';
 
 // --- Lookup tables ---
 
@@ -53,38 +43,44 @@ export const supplier = sqliteTable('supplier', {
 
 // --- Main tables ---
 
-export const bottle = sqliteTable(
-	'bottle',
-	{
-		bottleId: integer('bottle_id').primaryKey({ autoIncrement: true }),
-		folderName: text('folder_name', { length: 255 }).unique(),
-		imagePath: text('image_path'),
-		claimMl: real('claim_ml'),
-		massG: text('mass_g', { length: 20 }),
-		version: text('version'),
-		status: text('status', { enum: BOTTLE_STATUS }),
-		pdmNumber: integer('pdm_number'),
-		overflowCapacityMl: real('overflow_capacity_ml'),
-		surfaceCm2: real('surface_cm2'),
-		thicknessMm: real('thickness_mm'),
-		massLossExp: real('mass_loss_exp'),
-		massLossNum: real('mass_loss_num'),
-		createdAt: text('created_at'),
-		lastModified: text('last_modified'),
-		bottleTypeId: integer('bottle_type_id').notNull().references(() => bottleType.bottleTypeId),
-		brandId: integer('brand_id').notNull().references(() => brand.brandId),
-		materialId: integer('material_id').notNull().references(() => material.materialId),
-		overbrandId: integer('overbrand_id').notNull().references(() => overbrand.overBrandId),
-		zoneId: integer('zone_id').notNull().references(() => zone.zoneId)
-	}
-);
+export const bottle = sqliteTable('bottle', {
+	bottleId: integer('bottle_id').primaryKey({ autoIncrement: true }),
+	folderName: text('folder_name', { length: 255 }).unique(),
+	imageExtension: text('image_extension', { length: 10 }),
+	claimMl: real('claim_ml'),
+	massG: text('mass_g', { length: 20 }),
+	version: text('version'),
+	status: text('status', { enum: BOTTLE_STATUS }),
+	pdmNumber: integer('pdm_number'),
+	overflowCapacityMl: real('overflow_capacity_ml'),
+	surfaceCm2: real('surface_cm2'),
+	thicknessMm: real('thickness_mm'),
+	massLossExp: real('mass_loss_exp'),
+	createdAt: text('created_at'),
+	lastModified: text('last_modified'),
+	bottleTypeId: integer('bottle_type_id')
+		.notNull()
+		.references(() => bottleType.bottleTypeId),
+	brandId: integer('brand_id')
+		.notNull()
+		.references(() => brand.brandId),
+	materialId: integer('material_id')
+		.notNull()
+		.references(() => material.materialId),
+	overbrandId: integer('overbrand_id')
+		.notNull()
+		.references(() => overbrand.overBrandId),
+	zoneId: integer('zone_id')
+		.notNull()
+		.references(() => zone.zoneId)
+});
 
 export const material = sqliteTable(
 	'material',
 	{
 		materialId: integer('material_id').primaryKey({ autoIncrement: true }),
 		folderName: text('folder_name', { length: 255 }).unique(),
-		imagePath: text('image_path'),
+		imageExtension: text('image_extension', { length: 10 }),
 		temperatureC: integer('temperature_c').notNull(),
 		productionYear: integer('production_year'),
 		avgElasticModulus: real('avg_elastic_modulus'),
@@ -101,8 +97,12 @@ export const material = sqliteTable(
 		pct1: integer('pct1').default(100),
 		ref2: text('ref2', { length: 100 }),
 		pct2: integer('pct2'),
-		materialFamilyId: integer('material_family_id').notNull().references(() => materialFamily.materialFamilyId),
-		supplierId1: integer('supplier_id_1').notNull().references(() => supplier.supplierId),
+		materialFamilyId: integer('material_family_id')
+			.notNull()
+			.references(() => materialFamily.materialFamilyId),
+		supplierId1: integer('supplier_id_1')
+			.notNull()
+			.references(() => supplier.supplierId),
 		supplierId2: integer('supplier_id_2').references(() => supplier.supplierId)
 	},
 	(table) => [
@@ -110,32 +110,30 @@ export const material = sqliteTable(
 	]
 );
 
-export const bottleAnalysis = sqliteTable(
-	'bottle_analysis',
-	{
-		bottleAnalysisId: integer('bottle_analysis_id').primaryKey({ autoIncrement: true }),
-		testType: text('test_type', { enum: BOTTLE_ANALYSIS_TEST_TYPE }).notNull(),
-		thicknessType: text('thickness_type', { enum: BOTTLE_ANALYSIS_THICKNESS_TYPE }).notNull(),
-		bottleAnalysisKey: text('bottle_analysis_key', { length: 40 }),
-		fileName: text('file_name', { length: 255 }),
-		xCoordinates: text('x_coordinates', { mode: 'json' }).notNull().$type<number[]>(),
-		yCoordinates: text('y_coordinates', { mode: 'json' }).notNull().$type<number[]>(),
-		bottleId: integer('bottle_id').notNull().references(() => bottle.bottleId, { onDelete: 'cascade' }),
-		fileContentText: text('file_content_text').notNull()
-	}
-);
+export const bottleAnalysis = sqliteTable('bottle_analysis', {
+	bottleAnalysisId: integer('bottle_analysis_id').primaryKey({ autoIncrement: true }),
+	testType: text('test_type', { enum: BOTTLE_ANALYSIS_TEST_TYPE }).notNull(),
+	thicknessType: text('thickness_type', { enum: BOTTLE_ANALYSIS_THICKNESS_TYPE }).notNull(),
+	bottleAnalysisKey: text('bottle_analysis_key', { length: 40 }),
+	fileName: text('file_name', { length: 255 }),
+	xCoordinates: text('x_coordinates', { mode: 'json' }).notNull().$type<number[]>(),
+	yCoordinates: text('y_coordinates', { mode: 'json' }).notNull().$type<number[]>(),
+	bottleId: integer('bottle_id')
+		.notNull()
+		.references(() => bottle.bottleId, { onDelete: 'cascade' }),
+	fileContentText: text('file_content_text').notNull()
+});
 
-export const materialAnalysis = sqliteTable(
-	'material_analysis',
-	{
-		materialAnalysisId: integer('material_analysis_id').primaryKey({ autoIncrement: true }),
-		testType: text('test_type', { enum: MATERIAL_ANALYSIS_TEST_TYPE }).notNull(),
-		testDirection: text('test_direction', { enum: MATERIAL_ANALYSIS_TEST_DIRECTION }).notNull(),
-		materialAnalysisKey: text('material_analysis_key', { length: 40 }),
-		fileName: text('file_name', { length: 255 }),
-		xCoordinates: text('x_coordinates', { mode: 'json' }).notNull().$type<number[]>(),
-		yCoordinates: text('y_coordinates', { mode: 'json' }).notNull().$type<number[]>(),
-		materialId: integer('material_id').notNull().references(() => material.materialId, { onDelete: 'cascade' }),
-		fileContentText: text('file_content_text').notNull()
-	}
-);
+export const materialAnalysis = sqliteTable('material_analysis', {
+	materialAnalysisId: integer('material_analysis_id').primaryKey({ autoIncrement: true }),
+	testType: text('test_type', { enum: MATERIAL_ANALYSIS_TEST_TYPE }).notNull(),
+	testDirection: text('test_direction', { enum: MATERIAL_ANALYSIS_TEST_DIRECTION }).notNull(),
+	materialAnalysisKey: text('material_analysis_key', { length: 40 }),
+	fileName: text('file_name', { length: 255 }),
+	xCoordinates: text('x_coordinates', { mode: 'json' }).notNull().$type<number[]>(),
+	yCoordinates: text('y_coordinates', { mode: 'json' }).notNull().$type<number[]>(),
+	materialId: integer('material_id')
+		.notNull()
+		.references(() => material.materialId, { onDelete: 'cascade' }),
+	fileContentText: text('file_content_text').notNull()
+});

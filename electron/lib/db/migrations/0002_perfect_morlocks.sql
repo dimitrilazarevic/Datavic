@@ -1,0 +1,1 @@
+ALTER TABLE `bottle` DROP COLUMN `mass_loss_num`;

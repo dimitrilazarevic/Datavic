@@ -11,6 +11,7 @@ import type {
 	bottleAnalysis,
 	materialAnalysis
 } from '../db/schema';
+import type { BottleAnalysisKey, MaterialAnalysisKey } from '../../../shared/enums';
 
 export type BottleType = InferSelectModel<typeof bottleType>;
 export type BottleTypeInsert = InferInsertModel<typeof bottleType>;
@@ -32,9 +33,25 @@ export type SupplierInsert = InferInsertModel<typeof supplier>;
 
 export type Bottle = InferSelectModel<typeof bottle>;
 export type BottleInsert = InferInsertModel<typeof bottle>;
+export type BottleSummary = Bottle & {
+	bottleTypeName: string;
+	brandName: string;
+	overbrandName: string;
+	zoneName: string;
+	materialFolderName: string | null;
+	materialFamilyName: string;
+	massLossNum: number | null;
+	availableData?: Record<BottleAnalysisKey, boolean>;
+};
 
 export type Material = InferSelectModel<typeof material>;
 export type MaterialInsert = InferInsertModel<typeof material>;
+export type MaterialSummary = Material & {
+	materialFamilyName: string;
+	supplierName1: string;
+	supplierName2: string | null;
+	availableData?: Record<MaterialAnalysisKey, boolean>;
+};
 
 export type BottleAnalysis = InferSelectModel<typeof bottleAnalysis>;
 export type BottleAnalysisInsert = InferInsertModel<typeof bottleAnalysis>;

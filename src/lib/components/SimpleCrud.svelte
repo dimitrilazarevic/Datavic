@@ -13,8 +13,16 @@
 
 	interface Props {
 		title: string;
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		api: { getAll: () => Promise<any[]>; create: (data: any) => Promise<any>; update: (id: number, data: any) => Promise<any>; delete: (id: number) => Promise<any> };
+		api: {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			getAll: () => Promise<any[]>;
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			create: (data: any) => Promise<any>;
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			update: (id: number, data: any) => Promise<any>;
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			delete: (id: number) => Promise<any>;
+		};
 		idKey: string;
 		fields: FieldConfig[];
 	}
@@ -48,7 +56,10 @@
 		error = '';
 		try {
 			const data = Object.fromEntries(
-				fields.map((f) => [f.key, f.type === 'number' ? Number(formValues[f.key]) : String(formValues[f.key]).trim()])
+				fields.map((f) => [
+					f.key,
+					f.type === 'number' ? Number(formValues[f.key]) : String(formValues[f.key]).trim()
+				])
 			) as Item;
 			await api.create(data);
 			resetForm();
@@ -72,7 +83,10 @@
 		error = '';
 		try {
 			const data = Object.fromEntries(
-				fields.map((f) => [f.key, f.type === 'number' ? Number(editValues[f.key]) : String(editValues[f.key]).trim()])
+				fields.map((f) => [
+					f.key,
+					f.type === 'number' ? Number(editValues[f.key]) : String(editValues[f.key]).trim()
+				])
 			) as Item;
 			await api.update(editingId, data);
 			cancelEdit();
@@ -166,7 +180,9 @@
 									{/each}
 								</div>
 								<div class="edit-actions">
-									<IconButton onclick={saveEdit} variant="primary" label="Valider"><Check size={16} /></IconButton>
+									<IconButton onclick={saveEdit} variant="primary" label="Valider"
+										><Check size={16} /></IconButton
+									>
 									<IconButton onclick={cancelEdit} label="Annuler"><X size={16} /></IconButton>
 								</div>
 							</div>
@@ -178,8 +194,14 @@
 								{/each}
 							</span>
 							<div class="item-actions">
-								<IconButton onclick={() => startEdit(item)} label="Modifier"><Pencil size={16} /></IconButton>
-								<IconButton onclick={() => remove(item[idKey] as number)} variant="danger" label="Supprimer"><Trash2 size={16} /></IconButton>
+								<IconButton onclick={() => startEdit(item)} label="Modifier"
+									><Pencil size={16} /></IconButton
+								>
+								<IconButton
+									onclick={() => remove(item[idKey] as number)}
+									variant="danger"
+									label="Supprimer"><Trash2 size={16} /></IconButton
+								>
 							</div>
 						{/if}
 					</li>
@@ -243,7 +265,7 @@
 		opacity: 0.9;
 	}
 
-.error {
+	.error {
 		padding: var(--space-sm) var(--space-md);
 		background: #fde8ec;
 		border-radius: var(--radius);
@@ -289,7 +311,7 @@
 		gap: var(--space-sm);
 	}
 
-.edit-form {
+	.edit-form {
 		display: flex;
 		align-items: center;
 		gap: var(--space-sm);
@@ -299,6 +321,7 @@
 	.edit-fields {
 		display: flex;
 		flex: 1;
+		overflow: hidden;
 		gap: var(--space-sm);
 	}
 

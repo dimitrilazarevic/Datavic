@@ -28,7 +28,7 @@ export function handleDbError(err: unknown, methodName: string): never {
 		throw new Error(`Erreur DB [${code}] : ${msg}`);
 	}
 
-	throw new Error(`Erreur inattendue sur la BDD : ${err}`);
+	throw new Error(`Erreur sur la BDD : ${err}`);
 }
 
 function parseConstraintField(msg: string): string | null {

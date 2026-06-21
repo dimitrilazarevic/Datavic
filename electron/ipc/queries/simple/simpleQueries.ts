@@ -30,12 +30,7 @@ export function createSimpleQueries<T extends SQLiteTable>(
 
 		update(id: number, data: Partial<Insert>): Row {
 			try {
-				return getDb()
-					.update(table)
-					.set(data)
-					.where(eq(idColumn, id))
-					.returning()
-					.get() as Row;
+				return getDb().update(table).set(data).where(eq(idColumn, id)).returning().get() as Row;
 			} catch (err) {
 				handleDbError(err, `${tableName}.update`);
 			}
@@ -43,11 +38,7 @@ export function createSimpleQueries<T extends SQLiteTable>(
 
 		delete(id: number): Row {
 			try {
-				return getDb()
-					.delete(table)
-					.where(eq(idColumn, id))
-					.returning()
-					.get() as Row;
+				return getDb().delete(table).where(eq(idColumn, id)).returning().get() as Row;
 			} catch (err) {
 				handleDbError(err, `${tableName}.delete`);
 			}

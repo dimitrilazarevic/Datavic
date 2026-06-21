@@ -4,13 +4,14 @@
 	interface Props {
 		onclick?: () => void;
 		variant?: 'primary' | 'secondary' | 'ghost';
+		disabled?: boolean;
 		children: Snippet;
 	}
 
-	let { onclick, variant = 'primary', children }: Props = $props();
+	let { onclick, variant = 'primary', disabled = false, children }: Props = $props();
 </script>
 
-<button class="btn {variant}" {onclick}>
+<button class="btn {variant}" {onclick} {disabled}>
 	{@render children()}
 </button>
 
@@ -55,5 +56,10 @@
 
 	.btn.ghost:hover {
 		text-decoration: underline;
+	}
+
+	.btn:disabled {
+		opacity: 0.4;
+		cursor: not-allowed;
 	}
 </style>

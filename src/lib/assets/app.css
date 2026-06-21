@@ -65,15 +65,20 @@ body {
 	color: var(--color-text);
 	background: var(--color-bg);
 	-webkit-font-smoothing: antialiased;
+	overflow: hidden;
 }
 
-h1, h2, h3 {
+h1,
+h2,
+h3 {
 	margin: 0;
 	font-weight: 700;
 	line-height: 1.3;
 }
 
-h1 { font-size: var(--text-lg); }
+h1 {
+	font-size: var(--text-lg);
+}
 
 a {
 	color: var(--color-primary);
@@ -90,12 +95,15 @@ button {
 	cursor: pointer;
 }
 
-code, pre {
+code,
+pre {
 	font-family: var(--font-mono);
 	font-size: var(--text-sm);
 }
 
-input, select, textarea {
+input,
+select,
+textarea {
 	font-family: var(--font-family);
 	font-size: var(--text-base);
 }

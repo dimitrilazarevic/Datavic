@@ -7,6 +7,7 @@
 	let dbFolder = $state<string | null>(null);
 	let dbPath = $state('');
 	let backupMessage = $state('');
+	let backupPath = $state('');
 
 	async function load() {
 		const api = window.electronAPI;
@@ -41,9 +42,13 @@
 		const api = window.electronAPI;
 		if (!api) return;
 		backupMessage = '';
+		backupPath = '';
 		try {
-			const path = await api.config.backupDb();
-			if (path) backupMessage = `Backup enregistré : ${path}`;
+			const result = await api.config.backupDb();
+			if (result) {
+				backupMessage = 'Backup enregistré :';
+				backupPath = result;
+			}
 		} catch (err) {
 			backupMessage = `Erreur : ${(err as Error).message}`;
 		}
@@ -58,8 +63,14 @@
 
 <Card title="Emplacement">
 	<div class="path-row">
-		<IconButton onclick={selectFolder} variant="primary" label="Changer le dossier"><FolderOpen size={16} /></IconButton>
-		<Button variant="ghost" onclick={() => window.electronAPI?.openPath(dbPath.replace(/[/\\][^/\\]+$/, ''))}>{dbPath}</Button>
+		<IconButton onclick={selectFolder} variant="primary" label="Changer le dossier"
+			><FolderOpen size={16} /></IconButton
+		>
+		<Button
+			variant="ghost"
+			onclick={() => window.electronAPI?.openPath(dbPath.replace(/[/\\][^/\\]+$/, ''))}
+			>{dbPath}</Button
+		>
 	</div>
 	{#if dbFolder}
 		<Button variant="secondary" onclick={resetFolder}>Revenir à l'emplacement par défaut</Button>
@@ -77,7 +88,14 @@
 		</Button>
 	</div>
 	{#if backupMessage}
-		<p class="message">{backupMessage}</p>
+		<p class="message">
+			{backupMessage}
+			{#if backupPath}
+				<Button variant="ghost" onclick={() => window.electronAPI?.openPath(backupPath)}
+					>{backupPath}</Button
+				>
+			{/if}
+		</p>
 	{/if}
 </Card>
 
@@ -91,7 +109,6 @@
 		align-items: center;
 		gap: var(--space-sm);
 	}
-
 
 	.backup-actions {
 		display: flex;

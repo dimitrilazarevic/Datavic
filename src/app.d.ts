@@ -2,12 +2,24 @@
 // for information about these interfaces
 
 import type {
-	BottleType, BottleTypeInsert,
-	Brand, BrandInsert,
-	Overbrand, OverbrandInsert,
-	Zone, ZoneInsert,
-	MaterialFamily, MaterialFamilyInsert,
-	Supplier, SupplierInsert
+	BottleType,
+	BottleTypeInsert,
+	Brand,
+	BrandInsert,
+	Overbrand,
+	OverbrandInsert,
+	Zone,
+	ZoneInsert,
+	MaterialFamily,
+	MaterialFamilyInsert,
+	Supplier,
+	SupplierInsert,
+	Bottle,
+	BottleInsert,
+	BottleSummary,
+	Material,
+	MaterialInsert,
+	MaterialSummary
 } from '../electron/lib/types';
 
 interface SimpleCrud<T, TInsert> {
@@ -15,6 +27,26 @@ interface SimpleCrud<T, TInsert> {
 	create: (data: TInsert) => Promise<T>;
 	update: (id: number, data: Partial<TInsert>) => Promise<T>;
 	delete: (id: number) => Promise<T>;
+}
+
+interface AnalysisFileData {
+	analysisKey: string;
+	fileName: string;
+	xCoordinates: number[];
+	yCoordinates: number[];
+	fileContentText: string;
+}
+
+interface EntityCrud<TSummary, T, TInsert> {
+	getAll: () => Promise<TSummary[]>;
+	getById: (id: number) => Promise<T | undefined>;
+	create: (data: TInsert) => Promise<T>;
+	update: (id: number, data: Partial<TInsert>) => Promise<T>;
+	delete: (id: number) => Promise<T>;
+	deleteMany: (ids: number[]) => Promise<void>;
+	exportZip: (ids: number[]) => Promise<string | null>;
+	uploadAnalysis: (id: number, data: AnalysisFileData) => Promise<void>;
+	deleteAnalysis: (id: number, analysisKey: string) => Promise<void>;
 }
 
 declare global {
@@ -40,6 +72,8 @@ declare global {
 			zone: SimpleCrud<Zone, ZoneInsert>;
 			materialFamily: SimpleCrud<MaterialFamily, MaterialFamilyInsert>;
 			supplier: SimpleCrud<Supplier, SupplierInsert>;
+			bottle: EntityCrud<BottleSummary, Bottle, BottleInsert>;
+			material: EntityCrud<MaterialSummary, Material, MaterialInsert>;
 		};
 	}
 

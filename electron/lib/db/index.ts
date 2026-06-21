@@ -19,7 +19,12 @@ export function initDatabase(dbPath: string) {
 	const migrationsFolder = isDev
 		? path.join(__dirname, '..', 'lib', 'db', 'migrations')
 		: path.join(process.resourcesPath, 'migrations');
-	migrate(db, { migrationsFolder });
+
+	try {
+		migrate(db, { migrationsFolder });
+	} catch (err) {
+		console.error(`Migration pas appliquée`, err);
+	}
 
 	return db;
 }
