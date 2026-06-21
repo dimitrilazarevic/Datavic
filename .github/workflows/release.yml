@@ -18,8 +18,8 @@ jobs:
         with:
           node-version: 22
 
-      - run: npm ci
-      - run: npm install @rolldown/binding-win32-x64-msvc
+      - run: del package-lock.json && npm install
+        shell: cmd
 
       - name: Build SvelteKit + Electron
         run: npm run build

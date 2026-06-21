@@ -3,7 +3,7 @@
 	"author": "Dimitri Lazarevic - ETIC INSA",
 	"description": "Une app de visualisation de données pour l'Oreal",
 	"private": true,
-	"version": "0.0.26",
+	"version": "0.0.27",
 	"type": "module",
 	"main": "electron/dist/main.cjs",
 	"scripts": {
@@ -50,10 +50,10 @@
 		"vite": "^8.0.16"
 	},
 	"dependencies": {
+		"@lucide/svelte": "^1.21.0",
 		"better-sqlite3": "^12.10.0",
 		"drizzle-orm": "^0.45.2",
-		"electron-updater": "^6.8.9",
-		"lucide-svelte": "^1.0.1"
+		"electron-updater": "^6.8.9"
 	},
 	"build": {
 		"appId": "com.datavic.app",

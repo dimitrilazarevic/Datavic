@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Card from './Card.svelte';
 	import IconButton from './IconButton.svelte';
-	import { Pencil, Trash2, Check, X } from 'lucide-svelte';
+	import { Pencil, Trash2, Check, X } from '@lucide/svelte';
 
 	type Item = Record<string, unknown>;
 

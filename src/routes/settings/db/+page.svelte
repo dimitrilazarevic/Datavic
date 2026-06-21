@@ -2,7 +2,7 @@
 	import Button from '$lib/components/Button.svelte';
 	import Card from '$lib/components/Card.svelte';
 	import IconButton from '$lib/components/IconButton.svelte';
-	import { Download, FolderOpen, Upload } from 'lucide-svelte';
+	import { Download, FolderOpen, Upload } from '@lucide/svelte';
 
 	let dbFolder = $state<string | null>(null);
 	let dbPath = $state('');
