@@ -3,7 +3,7 @@
 </script>
 
 <SimpleCrud
-	title="Sur-marques"
+	title="Marques mères"
 	api={window.electronAPI!.db.overbrand}
 	idKey="overBrandId"
 	fields={[{ key: 'overbrandName', label: 'Nom de la sur-marque' }]}

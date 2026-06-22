@@ -5,7 +5,7 @@
 	const items = [
 		{ href: '/settings/db', label: 'Base de données' },
 		{ href: '/settings/brands', label: 'Marques' },
-		{ href: '/settings/overbrands', label: 'Sur-marques' },
+		{ href: '/settings/overbrands', label: 'Marques mères' },
 		{ href: '/settings/zones', label: 'Zones' },
 		{ href: '/settings/suppliers', label: 'Fournisseurs' },
 		{ href: '/settings/material-families', label: 'Familles de matériaux' },
