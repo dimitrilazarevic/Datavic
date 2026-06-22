@@ -32,7 +32,7 @@
 		]);
 	});
 
-	function initForm(m?: Material) {
+	function initForm(m: Material | undefined = undefined) {
 		return {
 			materialFamilyId: m?.materialFamilyId ?? 0,
 			supplierId1: m?.supplierId1 ?? 0,

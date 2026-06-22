@@ -96,11 +96,15 @@
 	.main-layout {
 		display: flex;
 		height: calc(100vh - var(--nav-height, 48px));
+		gap: var(--space-lg);
+		padding: var(--space-lg) 0 0 var(--space-lg);
 	}
 
 	.main-layout main {
 		flex: 1;
 		overflow-y: auto;
+		padding-left: 0;
+		padding-top: 0;
 	}
 
 	main {

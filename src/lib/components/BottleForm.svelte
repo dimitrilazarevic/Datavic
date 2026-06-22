@@ -43,7 +43,7 @@
 		]);
 	});
 
-	function initForm(b?: Bottle) {
+	function initForm(b: Bottle | undefined = undefined) {
 		return {
 			bottleTypeId: b?.bottleTypeId ?? 0,
 			brandId: b?.brandId ?? 0,
