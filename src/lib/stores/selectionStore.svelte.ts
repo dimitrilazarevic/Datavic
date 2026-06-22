@@ -1,3 +1,5 @@
+import { SvelteSet } from 'svelte/reactivity';
+
 export type ToggleResult =
 	| { success: true; selectedIds: Set<string>; action: 'added' | 'removed' }
 	| { success: false; selectedIds: Set<string>; action: 'max_reached'; message: string };
@@ -61,7 +63,7 @@ export function createSelectionStore(
 		},
 
 		toggle(id: string): ToggleResult {
-			const next = new Set(selectedIds);
+			const next = new SvelteSet(selectedIds);
 			if (next.has(id)) {
 				next.delete(id);
 				selectedIds = next;
@@ -90,7 +92,7 @@ export function createSelectionStore(
 					message: `Maximum de ${maxSelection} selections atteint`
 				};
 			}
-			const next = new Set(selectedIds);
+			const next = new SvelteSet(selectedIds);
 			next.add(id);
 			selectedIds = next;
 			saveIds(storageKey, selectedIds);
@@ -98,14 +100,14 @@ export function createSelectionStore(
 		},
 
 		remove(id: string): void {
-			const next = new Set(selectedIds);
+			const next = new SvelteSet(selectedIds);
 			next.delete(id);
 			selectedIds = next;
 			saveIds(storageKey, selectedIds);
 		},
 
 		clear(): void {
-			selectedIds = new Set();
+			selectedIds = new SvelteSet();
 			saveIds(storageKey, selectedIds);
 		}
 	};

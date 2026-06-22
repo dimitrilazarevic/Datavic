@@ -374,13 +374,17 @@
 		/>
 	</section>
 
-	<section>
-		<h3>Analyses</h3>
-		<p class="accepted-files">
-			Fichiers acceptés : <code>{MATERIAL_ANALYSIS_FILENAMES.join(', ')}</code>
-		</p>
-		<MultiFileInput id="analysisInput" bind:analysisFiles error={errors.analysisFiles} />
-	</section>
+	{#if !isEdit}
+		<section>
+			<h3>Analyses</h3>
+			<MultiFileInput
+				id="analysisInput"
+				acceptedFilenames={MATERIAL_ANALYSIS_FILENAMES}
+				bind:analysisFiles
+				error={errors.analysisFiles}
+			/>
+		</section>
+	{/if}
 
 	{#if submitError}
 		<p class="submit-error">{submitError}</p>

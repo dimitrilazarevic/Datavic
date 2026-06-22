@@ -14,16 +14,16 @@ import type {
 	MaterialFamilyInsert,
 	Supplier,
 	SupplierInsert,
-	Bottle,
 	BottleInsert,
 	BottleSummary,
-	Material,
+	BottleWithAnalysis,
 	MaterialInsert,
-	MaterialSummary
+	MaterialSummary,
+	MaterialWithAnalysis
 } from '../electron/lib/types';
 
 interface SimpleCrud<T, TInsert> {
-	getAll: () => Promise<T[]>;
+	getAll: () => Promise<(T & { isLinked: boolean })[]>;
 	create: (data: TInsert) => Promise<T>;
 	update: (id: number, data: Partial<TInsert>) => Promise<T>;
 	delete: (id: number) => Promise<T>;
@@ -55,6 +55,11 @@ declare global {
 		getPlatform: () => Promise<string>;
 		installUpdate: () => Promise<void>;
 		openPath: (path: string) => Promise<string>;
+		getEntityImage: (
+			entity: 'bottles' | 'materials',
+			folderName: string,
+			ext: string
+		) => Promise<string | null>;
 		onUpdateAvailable: (callback: () => void) => void;
 		onUpdateDownloaded: (callback: () => void) => void;
 		config: {
@@ -72,8 +77,8 @@ declare global {
 			zone: SimpleCrud<Zone, ZoneInsert>;
 			materialFamily: SimpleCrud<MaterialFamily, MaterialFamilyInsert>;
 			supplier: SimpleCrud<Supplier, SupplierInsert>;
-			bottle: EntityCrud<BottleSummary, Bottle, BottleInsert>;
-			material: EntityCrud<MaterialSummary, Material, MaterialInsert>;
+			bottle: EntityCrud<BottleSummary, BottleWithAnalysis, BottleInsert>;
+			material: EntityCrud<MaterialSummary, MaterialWithAnalysis, MaterialInsert>;
 		};
 	}
 

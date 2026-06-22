@@ -4,15 +4,18 @@
 	import type { ColumnGroup } from '$lib/components/data_table/dataTable.types';
 	import AnalysisPoint from '$lib/components/data_table/AnalysisPoint.svelte';
 	import SelectRowButton from '$lib/components/data_table/SelectRowButton.svelte';
+	import IconButton from '$lib/components/IconButton.svelte';
+	import { Pencil } from '@lucide/svelte';
 	import type { MaterialSummary } from '../../../electron/lib/types';
 
 	interface Props {
 		materials: MaterialSummary[] | undefined;
 		search?: string;
 		onAnalysisClick?: (row: MaterialSummary, key: string) => void;
+		onEditClick?: (row: MaterialSummary) => void;
 	}
 
-	let { materials, search = '', onAnalysisClick }: Props = $props();
+	let { materials, search = '', onAnalysisClick, onEditClick }: Props = $props();
 
 	$effect(() => {
 		if (materials) console.log('MaterialDataTable items:', materials);
@@ -27,6 +30,12 @@
 
 {#snippet selectionSnippet(row: MaterialSummary)}
 	<SelectRowButton id={String(row.materialId)} selection={materialSelection} />
+{/snippet}
+
+{#snippet editSnippet(row: MaterialSummary)}
+	<IconButton onclick={() => onEditClick?.(row)} variant="secondary" label="Modifier">
+		<Pencil size={15} />
+	</IconButton>
 {/snippet}
 
 {#snippet analysisSnippet(row: MaterialSummary, key: string)}
@@ -103,6 +112,7 @@
 					render: formatDate
 				},
 				{ kind: 'select', snippet: selectionSnippet, label: 'Selection' },
+				{ kind: 'select', snippet: editSnippet, label: 'Modifier' },
 				{
 					label: 'Stress-Strain',
 					kind: 'analysis',
@@ -131,5 +141,6 @@
 		{search}
 		idField="materialId"
 		defaultSortKey="materialFamilyName"
+		rowClass={(row) => (row.isLinked ? 'linked' : '')}
 	/>
 {/if}

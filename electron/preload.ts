@@ -5,6 +5,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
 	getPlatform: () => ipcRenderer.invoke('get-platform'),
 	installUpdate: () => ipcRenderer.invoke('install-update'),
 	openPath: (path: string) => ipcRenderer.invoke('open-path', path),
+	getEntityImage: (entity: 'bottles' | 'materials', folderName: string, ext: string) =>
+		ipcRenderer.invoke('get-entity-image', entity, folderName, ext) as Promise<string | null>,
 
 	onUpdateAvailable: (callback: () => void) => {
 		ipcRenderer.on('update-available', callback);

@@ -5,10 +5,17 @@ import { getDb } from '../../lib/db';
 import { handleDbError } from './utils/handleDbError';
 import { material, materialFamily, supplier, materialAnalysis } from '../../lib/db/schema';
 import { createMaterialFileName } from '../../../shared/utils/create_filename';
-import { saveImage, saveAnalysisFile, ensureEntityDir, deleteEntityDir } from '../../lib/fileutil';
+import {
+	saveImage,
+	saveAnalysisFile,
+	ensureEntityDir,
+	deleteEntityDir,
+	deleteImage
+} from '../../lib/fileutil';
 import { exportEntitiesZip } from './utils/exportEntitiesZip';
 import { parseMaterialAnalysisKey } from '../../../shared/utils/parse_analysis_key';
 import { MATERIAL_ANALYSIS_KEYS } from '../../../shared/enums';
+import type { MaterialWithAnalysis } from '../../lib/types';
 
 interface ParsedAnalysisFile {
 	analysisKey: string;
@@ -20,7 +27,7 @@ interface ParsedAnalysisFile {
 
 const supplier2 = alias(supplier, 'supplier2');
 
-function getByIdWithJoins(id: number) {
+function getByIdWithJoins(id: number): MaterialWithAnalysis | undefined {
 	const row = getDb()
 		.select({
 			material,
@@ -77,12 +84,18 @@ const materialQueries = {
 				{} as Record<string, ReturnType<typeof sql<boolean>>>
 			);
 
+			const isLinkedColumn = sql<boolean>`(
+						SELECT COUNT(*) > 0 FROM bottle
+						WHERE bottle.material_id = ${material.materialId}
+					)`;
+
 			return getDb()
 				.select({
 					material,
 					materialFamilyName: materialFamily.materialFamilyName,
 					supplierName1: supplier.supplierName,
 					supplierName2: supplier2.supplierName,
+					isLinked: isLinkedColumn,
 					...availableDataColumns
 				})
 				.from(material)
@@ -96,13 +109,21 @@ const materialQueries = {
 						materialFamilyName,
 						supplierName1,
 						supplierName2,
+						isLinked,
 						...dataFlags
 					} = row;
 					const availableData = {} as Record<string, boolean>;
 					for (const key of MATERIAL_ANALYSIS_KEYS) {
 						availableData[key] = !!(dataFlags as Record<string, unknown>)[key];
 					}
-					return { ...m, materialFamilyName, supplierName1, supplierName2, availableData };
+					return {
+						...m,
+						materialFamilyName,
+						supplierName1,
+						supplierName2,
+						availableData,
+						isLinked: !!isLinked
+					};
 				});
 		} catch (err) {
 			handleDbError(err, 'material.getAll');
@@ -177,6 +198,14 @@ const materialQueries = {
 				typeof material.$inferInsert
 			> & { rawImageContent?: Uint8Array; analysisFiles?: ParsedAnalysisFile[] };
 
+			const oldImageExtension = rawImageContent
+				? (getDb()
+						.select({ imageExtension: material.imageExtension })
+						.from(material)
+						.where(eq(material.materialId, id))
+						.get()?.imageExtension ?? undefined)
+				: undefined;
+
 			getDb().transaction((tx) => {
 				tx.update(material)
 					.set({ ...dbData, lastModified: new Date().toISOString() })
@@ -220,6 +249,9 @@ const materialQueries = {
 						.where(eq(material.materialId, id))
 						.get();
 					if (row?.imageExtension) {
+						if (oldImageExtension && oldImageExtension !== row.imageExtension) {
+							deleteImage('materials', folderName, oldImageExtension);
+						}
 						saveImage('materials', folderName, row.imageExtension, rawImageContent);
 					}
 				}

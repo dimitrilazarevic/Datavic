@@ -314,8 +314,19 @@ function registerAppHandlers() {
 	electron.ipcMain.handle('install-update', () => {
 		autoUpdater$1.quitAndInstall();
 	});
-	electron.ipcMain.handle('open-path', (_event, path) => {
-		return electron.shell.openPath(path);
+	electron.ipcMain.handle('open-path', (_event, filePath) => {
+		return electron.shell.openPath(filePath);
+	});
+	electron.ipcMain.handle('get-entity-image', (_event, entity, folderName, ext) => {
+		const filePath = path.default.join(
+			path.default.dirname(getDbPath()),
+			entity,
+			folderName,
+			`image.${ext}`
+		);
+		if (!fs.default.existsSync(filePath)) return null;
+		const data = fs.default.readFileSync(filePath);
+		return `data:${ext === 'jpg' || ext === 'jpeg' ? 'image/jpeg' : `image/${ext}`};base64,${data.toString('base64')}`;
 	});
 }
 //#endregion
@@ -496,11 +507,17 @@ function parseNotNullColumn(msg) {
 }
 //#endregion
 //#region electron/ipc/queries/simple/simpleQueries.ts
-function createSimpleQueries(table, idColumn, tableName) {
+function createSimpleQueries(table, idColumn, tableName, getLinkedIds) {
+	const idKey = Object.entries(table).find(([, col]) => col === idColumn)?.[0];
 	return {
 		getAll() {
 			try {
-				return getDb().select().from(table).all();
+				const rows = getDb().select().from(table).all();
+				const linkedIds = getLinkedIds();
+				return rows.map((row) => ({
+					...row,
+					isLinked: linkedIds.has(row[idKey])
+				}));
 			} catch (err) {
 				handleDbError(err, `${tableName}.getAll`);
 			}
@@ -540,16 +557,71 @@ function createSimpleQueries(table, idColumn, tableName) {
 //#endregion
 //#region electron/ipc/queries/simple/index.ts
 var tables = {
-	bottleType: createSimpleQueries(bottleType, bottleType.bottleTypeId, 'bottleType'),
-	brand: createSimpleQueries(brand, brand.brandId, 'brand'),
-	overbrand: createSimpleQueries(overbrand, overbrand.overBrandId, 'overbrand'),
-	zone: createSimpleQueries(zone, zone.zoneId, 'zone'),
+	bottleType: createSimpleQueries(bottleType, bottleType.bottleTypeId, 'bottleType', () => {
+		return new Set(
+			getDb()
+				.select({ id: bottle.bottleTypeId })
+				.from(bottle)
+				.all()
+				.map((r) => r.id)
+		);
+	}),
+	brand: createSimpleQueries(brand, brand.brandId, 'brand', () => {
+		return new Set(
+			getDb()
+				.select({ id: bottle.brandId })
+				.from(bottle)
+				.all()
+				.map((r) => r.id)
+		);
+	}),
+	overbrand: createSimpleQueries(overbrand, overbrand.overBrandId, 'overbrand', () => {
+		return new Set(
+			getDb()
+				.select({ id: bottle.overbrandId })
+				.from(bottle)
+				.all()
+				.map((r) => r.id)
+		);
+	}),
+	zone: createSimpleQueries(zone, zone.zoneId, 'zone', () => {
+		return new Set(
+			getDb()
+				.select({ id: bottle.zoneId })
+				.from(bottle)
+				.all()
+				.map((r) => r.id)
+		);
+	}),
 	materialFamily: createSimpleQueries(
 		materialFamily,
 		materialFamily.materialFamilyId,
-		'materialFamily'
+		'materialFamily',
+		() => {
+			return new Set(
+				getDb()
+					.select({ id: material.materialFamilyId })
+					.from(material)
+					.all()
+					.map((r) => r.id)
+			);
+		}
 	),
-	supplier: createSimpleQueries(supplier, supplier.supplierId, 'supplier')
+	supplier: createSimpleQueries(supplier, supplier.supplierId, 'supplier', () => {
+		const rows = getDb()
+			.select({
+				id1: material.supplierId1,
+				id2: material.supplierId2
+			})
+			.from(material)
+			.all();
+		const ids = /* @__PURE__ */ new Set();
+		for (const row of rows) {
+			ids.add(row.id1);
+			if (row.id2 !== null) ids.add(row.id2);
+		}
+		return ids;
+	})
 };
 function registerSimpleHandlers() {
 	for (const [name, queries] of Object.entries(tables)) {
@@ -595,6 +667,12 @@ function saveAnalysisFile(entity, folderName, fileName, content) {
 	const filePath = path.default.join(dir, fileName);
 	fs.default.writeFileSync(filePath, content, 'utf-8');
 	return filePath;
+}
+function deleteImage(entity, folderName, ext) {
+	const filePath = path.default.join(getEntityDir(entity, folderName), `image.${ext}`);
+	try {
+		fs.default.unlinkSync(filePath);
+	} catch {}
 }
 //#endregion
 //#region electron/ipc/queries/utils/exportEntitiesZip.ts
@@ -858,6 +936,13 @@ var bottleQueries = {
 	update(id, data) {
 		try {
 			const { rawImageContent, analysisFiles, ...dbData } = data;
+			const oldImageExtension = rawImageContent
+				? (getDb()
+						.select({ imageExtension: bottle.imageExtension })
+						.from(bottle)
+						.where((0, drizzle_orm.eq)(bottle.bottleId, id))
+						.get()?.imageExtension ?? void 0)
+				: void 0;
 			getDb().transaction((tx) => {
 				tx.update(bottle)
 					.set({
@@ -900,8 +985,11 @@ var bottleQueries = {
 						.from(bottle)
 						.where((0, drizzle_orm.eq)(bottle.bottleId, id))
 						.get();
-					if (row?.imageExtension)
+					if (row?.imageExtension) {
+						if (oldImageExtension && oldImageExtension !== row.imageExtension)
+							deleteImage('bottles', folderName, oldImageExtension);
 						saveImage('bottles', folderName, row.imageExtension, rawImageContent);
+					}
 				}
 				if (analysisFiles?.length)
 					for (const af of analysisFiles)
@@ -1095,12 +1183,17 @@ var materialQueries = {
 					)`;
 				return acc;
 			}, {});
+			const isLinkedColumn = drizzle_orm.sql`(
+						SELECT COUNT(*) > 0 FROM bottle
+						WHERE bottle.material_id = ${material.materialId}
+					)`;
 			return getDb()
 				.select({
 					material,
 					materialFamilyName: materialFamily.materialFamilyName,
 					supplierName1: supplier.supplierName,
 					supplierName2: supplier2.supplierName,
+					isLinked: isLinkedColumn,
 					...availableDataColumns
 				})
 				.from(material)
@@ -1117,6 +1210,7 @@ var materialQueries = {
 						materialFamilyName,
 						supplierName1,
 						supplierName2,
+						isLinked,
 						...dataFlags
 					} = row;
 					const availableData = {};
@@ -1126,7 +1220,8 @@ var materialQueries = {
 						materialFamilyName,
 						supplierName1,
 						supplierName2,
-						availableData
+						availableData,
+						isLinked: !!isLinked
 					};
 				});
 		} catch (err) {
@@ -1189,6 +1284,13 @@ var materialQueries = {
 	update(id, data) {
 		try {
 			const { rawImageContent, analysisFiles, ...dbData } = data;
+			const oldImageExtension = rawImageContent
+				? (getDb()
+						.select({ imageExtension: material.imageExtension })
+						.from(material)
+						.where((0, drizzle_orm.eq)(material.materialId, id))
+						.get()?.imageExtension ?? void 0)
+				: void 0;
 			getDb().transaction((tx) => {
 				tx.update(material)
 					.set({
@@ -1231,8 +1333,11 @@ var materialQueries = {
 						.from(material)
 						.where((0, drizzle_orm.eq)(material.materialId, id))
 						.get();
-					if (row?.imageExtension)
+					if (row?.imageExtension) {
+						if (oldImageExtension && oldImageExtension !== row.imageExtension)
+							deleteImage('materials', folderName, oldImageExtension);
 						saveImage('materials', folderName, row.imageExtension, rawImageContent);
+					}
 				}
 				if (analysisFiles?.length)
 					for (const af of analysisFiles)

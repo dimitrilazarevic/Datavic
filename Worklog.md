@@ -1,6 +1,16 @@
 # Datavic
 
-## 22/06/2026 - B
+## 22/06/2026
+
+### Objectifs
+
+- Terminer la migration de l'app vers Electron
+
+### Résultats
+
+- Done
+
+## 21/06/2026 - B
 
 ### Objectifs
 

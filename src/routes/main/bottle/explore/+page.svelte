@@ -4,6 +4,7 @@
 	import IconButton from '$lib/components/IconButton.svelte';
 	import Modal from '$lib/components/Modal.svelte';
 	import AnalysisAction from '$lib/components/AnalysisAction.svelte';
+	import BottleForm from '$lib/components/BottleForm.svelte';
 	import { Trash2, Download } from '@lucide/svelte';
 	import { bottleSelection } from '$lib/stores/selectionStore.svelte';
 	import type { BottleSummary } from '../../../../../electron/lib/types';
@@ -12,6 +13,7 @@
 	let bottles = $state<BottleSummary[]>([]);
 	let search = $state('');
 	let modalData = $state<{ row: BottleSummary; key: string } | null>(null);
+	let editRow = $state<BottleSummary | null>(null);
 
 	async function loadBottles() {
 		const api = window.electronAPI;
@@ -38,6 +40,10 @@
 
 	function handleAnalysisClick(row: BottleSummary, key: string) {
 		modalData = { row, key };
+	}
+
+	function handleEditClick(row: BottleSummary) {
+		editRow = row;
 	}
 
 	onMount(() => {
@@ -67,7 +73,12 @@
 	</IconButton>
 </div>
 
-<BottleDataTable {bottles} {search} onAnalysisClick={handleAnalysisClick} />
+<BottleDataTable
+	{bottles}
+	{search}
+	onAnalysisClick={handleAnalysisClick}
+	onEditClick={handleEditClick}
+/>
 
 {#if modalData}
 	<Modal onclose={() => (modalData = null)}>
@@ -81,6 +92,18 @@
 			]}
 			onclose={() => (modalData = null)}
 			onchange={loadBottles}
+		/>
+	</Modal>
+{/if}
+
+{#if editRow}
+	<Modal onclose={() => (editRow = null)}>
+		<BottleForm
+			bottle={editRow}
+			onsave={async () => {
+				editRow = null;
+				await loadBottles();
+			}}
 		/>
 	</Modal>
 {/if}

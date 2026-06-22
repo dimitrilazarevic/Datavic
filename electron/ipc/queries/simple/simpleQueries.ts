@@ -6,15 +6,23 @@ import { handleDbError } from '../utils/handleDbError';
 export function createSimpleQueries<T extends SQLiteTable>(
 	table: T,
 	idColumn: Column,
-	tableName: string
+	tableName: string,
+	getLinkedIds: () => Set<number>
 ) {
 	type Row = T['$inferSelect'];
 	type Insert = T['$inferInsert'];
 
+	const idKey = Object.entries(table).find(([, col]) => col === idColumn)?.[0] as keyof Row;
+
 	return {
-		getAll(): Row[] {
+		getAll(): (Row & { isLinked: boolean })[] {
 			try {
-				return getDb().select().from(table).all() as Row[];
+				const rows = getDb().select().from(table).all() as Row[];
+				const linkedIds = getLinkedIds();
+				return rows.map((row) => ({
+					...row,
+					isLinked: linkedIds.has(row[idKey] as number)
+				}));
 			} catch (err) {
 				handleDbError(err, `${tableName}.getAll`);
 			}

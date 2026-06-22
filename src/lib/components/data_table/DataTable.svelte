@@ -14,6 +14,7 @@
 		search?: string;
 		defaultSortKey?: keyof T | null;
 		idField: string;
+		rowClass?: (row: T) => string;
 	}
 
 	let {
@@ -23,7 +24,8 @@
 		selection,
 		search = '',
 		defaultSortKey = null,
-		idField
+		idField,
+		rowClass
 	}: Props = $props();
 
 	const allColumns = $derived(flattenColumns(groups));
@@ -99,7 +101,12 @@
 		<TableHeader {groups} {sortKey} {sortDirection} onSort={handleSort} />
 		<tbody>
 			{#each paginatedItems as row (row[idField])}
-				<TableRow {row} columns={allColumns} selected={selection.has(String(row[idField]))} />
+				<TableRow
+					{row}
+					columns={allColumns}
+					selected={selection.has(String(row[idField]))}
+					extraClass={rowClass?.(row)}
+				/>
 			{/each}
 		</tbody>
 	</table>

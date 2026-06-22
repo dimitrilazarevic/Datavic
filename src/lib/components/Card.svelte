@@ -3,15 +3,19 @@
 
 	interface Props {
 		title?: string;
+		actions?: Snippet;
 		children: Snippet;
 	}
 
-	let { title, children }: Props = $props();
+	let { title, actions, children }: Props = $props();
 </script>
 
 <div class="card">
-	{#if title}
-		<h2 class="card-title">{title}</h2>
+	{#if title || actions}
+		<div class="card-header">
+			{#if title}<h2 class="card-title">{title}</h2>{/if}
+			{#if actions}<div class="card-actions">{@render actions()}</div>{/if}
+		</div>
 	{/if}
 	<div class="card-body">
 		{@render children()}
@@ -26,10 +30,21 @@
 		padding: var(--space-md);
 	}
 
+	.card-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: var(--space-md);
+	}
+
 	.card-title {
 		font-size: var(--text-base);
 		font-weight: 600;
-		margin-bottom: var(--space-md);
+	}
+
+	.card-actions {
+		display: flex;
+		gap: var(--space-sm);
 	}
 
 	.card-body {

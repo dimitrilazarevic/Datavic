@@ -4,15 +4,18 @@
 	import type { ColumnGroup } from '$lib/components/data_table/dataTable.types';
 	import AnalysisPoint from '$lib/components/data_table/AnalysisPoint.svelte';
 	import SelectRowButton from '$lib/components/data_table/SelectRowButton.svelte';
+	import IconButton from '$lib/components/IconButton.svelte';
+	import { Pencil } from '@lucide/svelte';
 	import type { BottleSummary } from '../../../electron/lib/types';
 
 	interface Props {
 		bottles: BottleSummary[] | undefined;
 		search?: string;
 		onAnalysisClick?: (row: BottleSummary, key: string) => void;
+		onEditClick?: (row: BottleSummary) => void;
 	}
 
-	let { bottles, search = '', onAnalysisClick }: Props = $props();
+	let { bottles, search = '', onAnalysisClick, onEditClick }: Props = $props();
 
 	$effect(() => {
 		if (bottles) console.log('BottleDataTable items:', bottles);
@@ -27,6 +30,12 @@
 
 {#snippet selectionSnippet(row: BottleSummary)}
 	<SelectRowButton id={String(row.bottleId)} selection={bottleSelection} />
+{/snippet}
+
+{#snippet editSnippet(row: BottleSummary)}
+	<IconButton onclick={() => onEditClick?.(row)} variant="secondary" label="Modifier">
+		<Pencil size={15} />
+	</IconButton>
 {/snippet}
 
 {#snippet analysisSnippet(row: BottleSummary, key: string)}
@@ -68,6 +77,7 @@
 					render: formatDate
 				},
 				{ kind: 'select', snippet: selectionSnippet, label: 'Selection' },
+				{ kind: 'select', snippet: editSnippet, label: 'Modifier' },
 				{
 					label: 'Squeeze',
 					kind: 'analysis',

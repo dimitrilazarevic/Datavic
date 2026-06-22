@@ -294,13 +294,17 @@
 		<ImageInput id="bottleImage" bind:imageData bind:imageExtension error={errors.imageExtension} />
 	</section>
 
-	<section>
-		<h3>Analyses</h3>
-		<p class="accepted-files">
-			Fichiers acceptés : <code>{BOTTLE_ANALYSIS_FILENAMES.join(', ')}</code>
-		</p>
-		<MultiFileInput id="analysisInput" bind:analysisFiles error={errors.analysisFiles} />
-	</section>
+	{#if !isEdit}
+		<section>
+			<h3>Analyses</h3>
+			<MultiFileInput
+				id="analysisInput"
+				acceptedFilenames={BOTTLE_ANALYSIS_FILENAMES}
+				bind:analysisFiles
+				error={errors.analysisFiles}
+			/>
+		</section>
+	{/if}
 
 	{#if submitError}
 		<p class="submit-error">{submitError}</p>

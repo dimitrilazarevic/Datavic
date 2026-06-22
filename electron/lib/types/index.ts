@@ -43,6 +43,16 @@ export type BottleSummary = Bottle & {
 	massLossNum: number | null;
 	availableData?: Record<BottleAnalysisKey, boolean>;
 };
+export type BottleWithAnalysis = Bottle & {
+	bottleTypeName: string;
+	brandName: string;
+	overbrandName: string;
+	zoneName: string;
+	materialFolderName: string | null;
+	materialFamilyName: string;
+	massLossNum: number | null;
+	analyses: BottleAnalysis[];
+};
 
 export type Material = InferSelectModel<typeof material>;
 export type MaterialInsert = InferInsertModel<typeof material>;
@@ -51,6 +61,13 @@ export type MaterialSummary = Material & {
 	supplierName1: string;
 	supplierName2: string | null;
 	availableData?: Record<MaterialAnalysisKey, boolean>;
+	isLinked: boolean;
+};
+export type MaterialWithAnalysis = Material & {
+	materialFamilyName: string;
+	supplierName1: string;
+	supplierName2: string | null;
+	analyses: MaterialAnalysis[];
 };
 
 export type BottleAnalysis = InferSelectModel<typeof bottleAnalysis>;

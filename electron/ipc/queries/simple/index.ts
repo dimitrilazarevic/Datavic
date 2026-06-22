@@ -5,21 +5,76 @@ import {
 	overbrand,
 	zone,
 	materialFamily,
-	supplier
+	supplier,
+	bottle,
+	material
 } from '../../../lib/db/schema';
+import { getDb } from '../../../lib/db';
 import { createSimpleQueries } from './simpleQueries';
 
 export const tables = {
-	bottleType: createSimpleQueries(bottleType, bottleType.bottleTypeId, 'bottleType'),
-	brand: createSimpleQueries(brand, brand.brandId, 'brand'),
-	overbrand: createSimpleQueries(overbrand, overbrand.overBrandId, 'overbrand'),
-	zone: createSimpleQueries(zone, zone.zoneId, 'zone'),
+	bottleType: createSimpleQueries(bottleType, bottleType.bottleTypeId, 'bottleType', () => {
+		return new Set(
+			getDb()
+				.select({ id: bottle.bottleTypeId })
+				.from(bottle)
+				.all()
+				.map((r) => r.id)
+		);
+	}),
+	brand: createSimpleQueries(brand, brand.brandId, 'brand', () => {
+		return new Set(
+			getDb()
+				.select({ id: bottle.brandId })
+				.from(bottle)
+				.all()
+				.map((r) => r.id)
+		);
+	}),
+	overbrand: createSimpleQueries(overbrand, overbrand.overBrandId, 'overbrand', () => {
+		return new Set(
+			getDb()
+				.select({ id: bottle.overbrandId })
+				.from(bottle)
+				.all()
+				.map((r) => r.id)
+		);
+	}),
+	zone: createSimpleQueries(zone, zone.zoneId, 'zone', () => {
+		return new Set(
+			getDb()
+				.select({ id: bottle.zoneId })
+				.from(bottle)
+				.all()
+				.map((r) => r.id)
+		);
+	}),
 	materialFamily: createSimpleQueries(
 		materialFamily,
 		materialFamily.materialFamilyId,
-		'materialFamily'
+		'materialFamily',
+		() => {
+			return new Set(
+				getDb()
+					.select({ id: material.materialFamilyId })
+					.from(material)
+					.all()
+					.map((r) => r.id)
+			);
+		}
 	),
-	supplier: createSimpleQueries(supplier, supplier.supplierId, 'supplier')
+	supplier: createSimpleQueries(supplier, supplier.supplierId, 'supplier', () => {
+		const rows = getDb()
+			.select({ id1: material.supplierId1, id2: material.supplierId2 })
+			.from(material)
+			.all();
+		const ids = new Set<number>();
+		for (const row of rows) {
+			ids.add(row.id1);
+			if (row.id2 !== null) ids.add(row.id2);
+		}
+		return ids;
+	})
 };
 
 type TableName = keyof typeof tables;

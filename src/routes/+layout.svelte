@@ -7,12 +7,13 @@
 
 	let isMain = $derived(page.url.pathname.startsWith('/main/'));
 	let entitySegment = $derived(page.url.pathname.split('/')[2] ?? 'bottle');
+	let specificMenu = $derived(page.url.pathname.split('/')[3] ?? 'explore');
 
 	let sidenavItems = $derived([
-		{ href: `/main/${entitySegment}/explore`, label: 'Explore' },
-		{ href: `/main/${entitySegment}/create`, label: 'Create' },
-		{ href: `/main/${entitySegment}/view`, label: 'View' },
-		{ href: `/main/${entitySegment}/compare`, label: 'Compare' }
+		{ href: `/main/${entitySegment}/create`, label: 'Créer' },
+		{ href: `/main/${entitySegment}/explore`, label: 'Explorer' },
+		{ href: `/main/${entitySegment}/view`, label: 'Visualiser' },
+		{ href: `/main/${entitySegment}/compare`, label: 'Comparer' }
 	]);
 </script>
 
@@ -20,9 +21,12 @@
 
 <nav>
 	<div class="nav-left">
-		<a href="/main/bottle/explore" class:active={page.url.pathname.includes('bottle')}>Bottle</a>
-		<a href="/main/material/explore" class:active={page.url.pathname.includes('material')}
-			>Material</a
+		<a href={`/main/bottle/${specificMenu}`} class:active={page.url.pathname.includes('bottle/')}
+			>Bottle</a
+		>
+		<a
+			href={`/main/material/${specificMenu}`}
+			class:active={page.url.pathname.includes('material/')}>Material</a
 		>
 	</div>
 	<div class="nav-right">

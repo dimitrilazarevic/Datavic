@@ -1,33 +1,31 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import type { BottleSummary, BottleWithAnalysis } from '../../../../../electron/lib/types';
-	import type { BottleAnalysisTestType } from '../../../../../shared/enums';
-	import { bottleSelection } from '$lib/stores/selectionStore.svelte';
+	import type { MaterialSummary, MaterialWithAnalysis } from '../../../../../electron/lib/types';
+	import type { MaterialAnalysisTestType } from '../../../../../shared/enums';
+	import { materialSelection } from '$lib/stores/selectionStore.svelte';
 	import { ChevronLeft, ChevronRight, Pencil } from '@lucide/svelte';
 	import Button from '$lib/components/Button.svelte';
 	import Card from '$lib/components/Card.svelte';
 	import IconButton from '$lib/components/IconButton.svelte';
 	import Modal from '$lib/components/Modal.svelte';
 	import EntityImage from '$lib/components/EntityImage.svelte';
-	import BottleGraph from '$lib/components/BottleGraph.svelte';
-	import BottleDetailsList from '$lib/components/BottleDetailsList.svelte';
-	import BottleForm from '$lib/components/BottleForm.svelte';
+	import MaterialGraph from '$lib/components/MaterialGraph.svelte';
+	import MaterialDetailsList from '$lib/components/MaterialDetailsList.svelte';
+	import MaterialForm from '$lib/components/MaterialForm.svelte';
 
-	const TEST_TYPES: { value: BottleAnalysisTestType; label: string }[] = [
-		{ value: 'squeeze', label: 'Squeeze' },
-		{ value: 'sideload_io', label: 'Sideload IO' },
-		{ value: 'sideload_ioi', label: 'Sideload IOI' },
-		{ value: 'topload', label: 'Topload' }
+	const TEST_TYPES: { value: MaterialAnalysisTestType; label: string }[] = [
+		{ value: 'ss', label: 'Contrainte–Déformation' },
+		{ value: 'fd', label: 'Force–Déplacement' }
 	];
 
-	let summaries = $state<BottleSummary[]>([]);
+	let summaries = $state<MaterialSummary[]>([]);
 	let selectedId = $state<number | null>(null);
-	let selected = $state<BottleWithAnalysis | null>(null);
-	let testType = $state<BottleAnalysisTestType>('squeeze');
+	let selected = $state<MaterialWithAnalysis | null>(null);
+	let testType = $state<MaterialAnalysisTestType>('ss');
 	let showEdit = $state(false);
 
 	let options = $derived(
-		summaries.map((b) => ({ value: b.bottleId, label: b.folderName ?? `#${b.bottleId}` }))
+		summaries.map((m) => ({ value: m.materialId, label: m.folderName ?? `#${m.materialId}` }))
 	);
 
 	let filteredAnalyses = $derived(selected?.analyses.filter((a) => a.testType === testType));
@@ -35,25 +33,25 @@
 	onMount(async () => {
 		const api = window.electronAPI;
 		if (!api) return;
-		summaries = (await api.db.bottle.getAll()).filter((s) =>
-			bottleSelection.has(String(s.bottleId))
+		summaries = (await api.db.material.getAll()).filter((s) =>
+			materialSelection.has(String(s.materialId))
 		);
-		if (summaries.length) selectedId = summaries[0].bottleId;
+		if (summaries.length) selectedId = summaries[0].materialId;
 	});
 
 	$effect(() => {
 		if (selectedId == null) return;
 		const api = window.electronAPI;
 		if (!api) return;
-		api.db.bottle.getById(selectedId).then((b) => {
-			selected = b ?? null;
+		api.db.material.getById(selectedId).then((m) => {
+			selected = m ?? null;
 		});
 	});
 
 	function navigate(dir: 1 | -1) {
-		const i = summaries.findIndex((b) => b.bottleId === selectedId);
+		const i = summaries.findIndex((m) => m.materialId === selectedId);
 		if (i < 0) return;
-		selectedId = summaries[(i + dir + summaries.length) % summaries.length].bottleId;
+		selectedId = summaries[(i + dir + summaries.length) % summaries.length].materialId;
 	}
 
 	async function reloadAfterEdit() {
@@ -61,20 +59,20 @@
 		const api = window.electronAPI;
 		if (!api || selectedId == null) return;
 		[summaries, selected] = await Promise.all([
-			api.db.bottle.getAll(),
-			api.db.bottle.getById(selectedId).then((b) => b ?? null)
+			api.db.material.getAll(),
+			api.db.material.getById(selectedId).then((m) => m ?? null)
 		]);
 	}
 </script>
 
 {#if showEdit && selected}
 	<Modal onclose={() => (showEdit = false)}>
-		<BottleForm bottle={selected} onsave={reloadAfterEdit} />
+		<MaterialForm material={selected} onsave={reloadAfterEdit} />
 	</Modal>
 {/if}
 
 {#if summaries.length === 0}
-	<p class="empty">Aucun flacon disponible.</p>
+	<p class="empty">Aucun matériau disponible.</p>
 {:else}
 	<div class="layout">
 		<div class="panel-left">
@@ -97,7 +95,7 @@
 			</div>
 
 			<EntityImage
-				entity="bottles"
+				entity="materials"
 				folderName={selected?.folderName}
 				imageExtension={selected?.imageExtension}
 			/>
@@ -108,7 +106,7 @@
 						<Pencil size={14} />
 					</IconButton>
 				{/snippet}
-				<BottleDetailsList bottle={selected} />
+				<MaterialDetailsList material={selected} />
 			</Card>
 		</div>
 
@@ -125,7 +123,7 @@
 			</div>
 			<div class="graph-wrapper">
 				{#key filteredAnalyses}
-					<BottleGraph analyses={filteredAnalyses} />
+					<MaterialGraph analyses={selected?.analyses} {testType} />
 				{/key}
 			</div>
 		</div>

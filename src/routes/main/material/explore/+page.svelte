@@ -4,6 +4,7 @@
 	import IconButton from '$lib/components/IconButton.svelte';
 	import Modal from '$lib/components/Modal.svelte';
 	import AnalysisAction from '$lib/components/AnalysisAction.svelte';
+	import MaterialForm from '$lib/components/MaterialForm.svelte';
 	import { Trash2, Download } from '@lucide/svelte';
 	import { materialSelection } from '$lib/stores/selectionStore.svelte';
 	import type { MaterialSummary } from '../../../../../electron/lib/types';
@@ -12,6 +13,13 @@
 	let materials = $state<MaterialSummary[]>([]);
 	let search = $state('');
 	let modalData = $state<{ row: MaterialSummary; key: string } | null>(null);
+	let editRow = $state<MaterialSummary | null>(null);
+
+	const hasLinkedSelected = $derived(
+		materialSelection.array.some(
+			(id) => materials.find((m) => String(m.materialId) === id)?.isLinked
+		)
+	);
 
 	async function loadMaterials() {
 		const api = window.electronAPI;
@@ -40,6 +48,10 @@
 		modalData = { row, key };
 	}
 
+	function handleEditClick(row: MaterialSummary) {
+		editRow = row;
+	}
+
 	onMount(() => {
 		loadMaterials();
 	});
@@ -60,14 +72,19 @@
 	<IconButton
 		onclick={deleteSelected}
 		variant="danger"
-		label="Supprimer"
-		disabled={materialSelection.size === 0}
+		label={hasLinkedSelected ? 'Matériau lié à une bouteille' : 'Supprimer'}
+		disabled={materialSelection.size === 0 || hasLinkedSelected}
 	>
 		<Trash2 size={18} />
 	</IconButton>
 </div>
 
-<MaterialDataTable {materials} {search} onAnalysisClick={handleAnalysisClick} />
+<MaterialDataTable
+	{materials}
+	{search}
+	onAnalysisClick={handleAnalysisClick}
+	onEditClick={handleEditClick}
+/>
 
 {#if modalData}
 	<Modal onclose={() => (modalData = null)}>
@@ -81,6 +98,18 @@
 			]}
 			onclose={() => (modalData = null)}
 			onchange={loadMaterials}
+		/>
+	</Modal>
+{/if}
+
+{#if editRow}
+	<Modal onclose={() => (editRow = null)}>
+		<MaterialForm
+			material={editRow}
+			onsave={async () => {
+				editRow = null;
+				await loadMaterials();
+			}}
 		/>
 	</Modal>
 {/if}

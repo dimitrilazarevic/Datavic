@@ -14,10 +14,17 @@ import {
 } from '../../lib/db/schema';
 import { inArray } from 'drizzle-orm';
 import { createBottleFileName } from '../../../shared/utils/create_filename';
-import { saveImage, saveAnalysisFile, ensureEntityDir, deleteEntityDir } from '../../lib/fileutil';
+import {
+	saveImage,
+	saveAnalysisFile,
+	ensureEntityDir,
+	deleteEntityDir,
+	deleteImage
+} from '../../lib/fileutil';
 import { exportEntitiesZip } from './utils/exportEntitiesZip';
 import { parseBottleAnalysisKey } from '../../../shared/utils/parse_analysis_key';
 import { BOTTLE_ANALYSIS_KEYS } from '../../../shared/enums';
+import type { BottleWithAnalysis } from '../../lib/types';
 
 interface ParsedAnalysisFile {
 	analysisKey: string;
@@ -36,7 +43,7 @@ function computeMassLossNum(
 	return constant * (1 / 10000) * (surface / thickness) * 60;
 }
 
-function getByIdWithJoins(id: number) {
+function getByIdWithJoins(id: number): BottleWithAnalysis | undefined {
 	const row = getDb()
 		.select({
 			bottle,
@@ -232,6 +239,14 @@ const bottleQueries = {
 				typeof bottle.$inferInsert
 			> & { rawImageContent?: Uint8Array; analysisFiles?: ParsedAnalysisFile[] };
 
+			const oldImageExtension = rawImageContent
+				? (getDb()
+						.select({ imageExtension: bottle.imageExtension })
+						.from(bottle)
+						.where(eq(bottle.bottleId, id))
+						.get()?.imageExtension ?? undefined)
+				: undefined;
+
 			getDb().transaction((tx) => {
 				tx.update(bottle)
 					.set({ ...dbData, lastModified: new Date().toISOString() })
@@ -275,6 +290,9 @@ const bottleQueries = {
 						.where(eq(bottle.bottleId, id))
 						.get();
 					if (row?.imageExtension) {
+						if (oldImageExtension && oldImageExtension !== row.imageExtension) {
+							deleteImage('bottles', folderName, oldImageExtension);
+						}
 						saveImage('bottles', folderName, row.imageExtension, rawImageContent);
 					}
 				}

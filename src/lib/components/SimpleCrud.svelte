@@ -200,7 +200,8 @@
 								<IconButton
 									onclick={() => remove(item[idKey] as number)}
 									variant="danger"
-									label="Supprimer"><Trash2 size={16} /></IconButton
+									label="Supprimer"
+									disabled={!!item.isLinked}><Trash2 size={16} /></IconButton
 								>
 							</div>
 						{/if}

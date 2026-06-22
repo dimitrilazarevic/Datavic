@@ -54,3 +54,16 @@ export function getImagePath(
 	const filePath = path.join(getEntityDir(entity, folderName), `image.${ext}`);
 	return fs.existsSync(filePath) ? filePath : null;
 }
+
+export function deleteImage(
+	entity: 'bottles' | 'materials',
+	folderName: string,
+	ext: string
+): void {
+	const filePath = path.join(getEntityDir(entity, folderName), `image.${ext}`);
+	try {
+		fs.unlinkSync(filePath);
+	} catch {
+		// file may not exist
+	}
+}

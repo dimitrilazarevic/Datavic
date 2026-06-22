@@ -5,6 +5,8 @@ electron.contextBridge.exposeInMainWorld('electronAPI', {
 	getPlatform: () => electron.ipcRenderer.invoke('get-platform'),
 	installUpdate: () => electron.ipcRenderer.invoke('install-update'),
 	openPath: (path) => electron.ipcRenderer.invoke('open-path', path),
+	getEntityImage: (entity, folderName, ext) =>
+		electron.ipcRenderer.invoke('get-entity-image', entity, folderName, ext),
 	onUpdateAvailable: (callback) => {
 		electron.ipcRenderer.on('update-available', callback);
 	},
